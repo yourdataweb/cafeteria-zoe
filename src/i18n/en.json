@@ -1,0 +1,158 @@
+{
+  "locale": "en",
+  "htmlLang": "en-GB",
+  "ogLocale": "en_GB",
+  "dir": "ltr",
+
+  "meta": {
+    "title": "Cafetería zoe — Neighbourhood coffee shop on Rambla de Sant Jordi, Vilanova i la Geltrú",
+    "description": "Cafetería zoe, on Rambla de Sant Jordi in Vilanova i la Geltrú. Good coffee, seeded bread, air conditioning and a warm welcome. Rated 5.0 out of 5 on Google.",
+    "ogTitle": "Cafetería zoe — Neighbourhood coffee shop in Vilanova i la Geltrú",
+    "ogDescription": "Good coffee, seeded bread and a cool, calm room on Rambla de Sant Jordi. Rated 5.0 out of 5 on Google."
+  },
+
+  "a11y": {
+    "skip": "Skip to content",
+    "home": "Cafetería zoe — home",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "mainNav": "Main navigation",
+    "footerNav": "Footer navigation",
+    "socialNav": "Social media",
+    "atAGlance": "At a glance",
+    "mapTitle": "Map showing Cafetería zoe on Rambla de Sant Jordi, Vilanova i la Geltrú",
+    "waAria": "",
+    "telAria": "",
+    "ratingAria": "Rated 5.0 out of 5 from 10 Google reviews",
+    "langSwitch": "Change language",
+    "posterAlt": "Illustration of the inside of Cafetería zoe, with coffee cups and tables by the window",
+    "newWindow": "opens in a new tab"
+  },
+
+  "brand": {
+    "sub": "Coffee shop · Vilanova i la Geltrú"
+  },
+
+  "nav": {
+    "about": "The place",
+    "kitchen": "What's served",
+    "reviews": "Reviews",
+    "visit": "Visit"
+  },
+
+  "langSwitch": {
+    "es": { "short": "ES", "aria": "Ver esta página en español" },
+    "ca": { "short": "CA", "aria": "Veure aquesta pàgina en català" },
+    "en": { "short": "EN", "aria": "View this page in English" }
+  },
+
+  "hero": {
+    "title": "A good coffee,<br>no fuss.",
+    "lede": "A small, well-kept coffee shop on Rambla de Sant Jordi. Coffee made to order \u2014 properly hot or just warm, whichever you prefer \u2014 seeded bread for breakfast, and a cool, bright room with music quiet enough to talk over.",
+    "ctaPrimary": "Get directions",
+    "ctaWhatsapp": "WhatsApp",
+    "statRating": "out of 5 on Google",
+    "statReviews": "Google reviews",
+    "statWhere": "Vilanova i la Geltrú"
+  },
+
+  "about": {
+    "eyebrow": "The place",
+    "title": "Small, bright,<br>and cool when it matters.",
+    "p1": "Cafetería zoe sits on Rambla de Sant Jordi in the centre of Vilanova i la Geltrú. It is a small room that clearly gets looked after: well lit, with music kept low and air conditioning running \u2014 which around here in summer is not a small thing.",
+    "p2": "Zoe works the counter and remembers how you take your coffee. Ask for it properly hot and it arrives properly hot; ask for it warm and that is what you get. It is the kind of place you go back to out of habit rather than novelty.",
+    "note": "Coffee, breakfast and something small to eat, served in.",
+    "factAddress": "Address",
+    "factPhone": "Phone",
+    "factCuisine": "What's served",
+    "cuisineValue": "Coffee, breakfast and drinks"
+  },
+
+  "kitchen": {
+    "eyebrow": "What's served",
+    "title": "What people order here",
+    "lede": "No long menu. These are the things that keep coming up when people write about what they had."
+  },
+
+  "capabilities": {
+    "serviceOptions": "Service",
+    "foodAndDrink": "Food and drink",
+    "atmosphere": "Atmosphere",
+    "amenities": "Amenities",
+    "parking": "Parking",
+    "accessibility": "Accessibility",
+    "payments": "Payments",
+    "labels": {
+      "Dine-in": "Eat in",
+      "Takeaway": "Takeaway",
+      "Delivery": "Delivery",
+      "Outdoor seating": "Outdoor seating",
+      "Reservable": "Reservations possible",
+      "Breakfast": "Breakfast",
+      "Lunch": "Lunch",
+      "Dinner": "Dinner",
+      "Beer": "Beer",
+      "Wine": "Wine",
+      "Cocktails": "Cocktails",
+      "Coffee": "Coffee",
+      "Dessert": "Dessert",
+      "Vegetarian options": "Vegetarian options",
+      "Air conditioning": "Air conditioning",
+      "Good for children": "Good for children",
+      "Menu for children": "Children's menu",
+      "Good for groups": "Good for groups",
+      "Live music": "Live music",
+      "Good for watching sports": "Good for watching sport",
+      "Restroom": "Restroom",
+      "Free parking lot": "Free car park",
+      "Free street parking": "Free street parking",
+      "Wheelchair-accessible entrance": "Wheelchair-accessible entrance",
+      "Wheelchair-accessible restroom": "Wheelchair-accessible restroom",
+      "Wheelchair-accessible seating": "Wheelchair-accessible seating",
+      "Credit cards": "Credit cards",
+      "Debit cards": "Debit cards",
+      "Contactless (NFC)": "Contactless (NFC)",
+      "Cash only": "Cash only"
+    }
+  },
+
+  "reviews": {
+    "eyebrow": "What people say",
+    "title": "From the people who have been in",
+    "count": "{count} reviews",
+    "onGoogle": "on Google",
+    "readAll": "Read all reviews on Google",
+    "write": "Write a review",
+    "originalIn": "Original in {lang}"
+  },
+
+  "visit": {
+    "eyebrow": "Visit",
+    "title": "On Rambla de Sant Jordi",
+    "whatsapp": "WhatsApp",
+    "call": "Call",
+    "directions": "Get directions",
+    "directionsSub": "Open in Maps",
+    "googleListing": "Google listing",
+    "googleListingSub": "Photos and reviews",
+    "openMap": "Open in Google Maps",
+    "note": "It sits right in the centre, a step off the rambla. Coming by car, look for parking on the surrounding streets."
+  },
+
+  "footer": {
+    "writeReview": "Write a review",
+    "rights": "All rights reserved.",
+    "dataNote": "Google Maps data, current as of {date}.",
+    "credit": "Reviews belong to their authors."
+  },
+
+  "jsonLd": {
+    "cuisine": "Coffee, Breakfast"
+  },
+
+  "languageNames": {
+    "es": "Spanish",
+    "ca": "Catalan",
+    "en": "English"
+  }
+}

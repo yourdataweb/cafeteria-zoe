@@ -1,0 +1,158 @@
+{
+  "locale": "ca",
+  "htmlLang": "ca-ES",
+  "ogLocale": "ca_ES",
+  "dir": "ltr",
+
+  "meta": {
+    "title": "Cafeteria zoe — Cafè de barri a la Rambla de Sant Jordi, Vilanova i la Geltrú",
+    "description": "Cafeteria zoe, a la Rambla de Sant Jordi de Vilanova i la Geltrú. Cafè ben fet, pa de llavors, aire condicionat i un tracte proper. 5,0 sobre 5 a Google.",
+    "ogTitle": "Cafeteria zoe — Cafè de barri a Vilanova i la Geltrú",
+    "ogDescription": "Cafè ben fet, pa de llavors i un local fresc i tranquil a la Rambla de Sant Jordi. 5,0 sobre 5 a Google."
+  },
+
+  "a11y": {
+    "skip": "Anar al contingut",
+    "home": "Cafeteria zoe — inici",
+    "openMenu": "Obrir menú",
+    "closeMenu": "Tancar menú",
+    "mainNav": "Navegació principal",
+    "footerNav": "Navegació del peu de pàgina",
+    "socialNav": "Xarxes socials",
+    "atAGlance": "D'un cop d'ull",
+    "mapTitle": "Mapa amb la ubicació de Cafeteria zoe a la Rambla de Sant Jordi, Vilanova i la Geltrú",
+    "waAria": "",
+    "telAria": "",
+    "ratingAria": "Valoració de 5,0 sobre 5 basada en 10 ressenyes de Google",
+    "langSwitch": "Canviar d'idioma",
+    "posterAlt": "Il·lustració de l'interior de Cafeteria zoe, amb tasses de cafè i taules vora la finestra",
+    "newWindow": "s'obre en una pestanya nova"
+  },
+
+  "brand": {
+    "sub": "Cafeteria · Vilanova i la Geltrú"
+  },
+
+  "nav": {
+    "about": "La casa",
+    "kitchen": "La carta",
+    "reviews": "Ressenyes",
+    "visit": "Visita'ns"
+  },
+
+  "langSwitch": {
+    "es": { "short": "ES", "aria": "Veure aquesta pàgina en castellà" },
+    "ca": { "short": "CA", "aria": "Veure aquesta pàgina en català" },
+    "en": { "short": "EN", "aria": "View this page in English" }
+  },
+
+  "hero": {
+    "title": "Un bon cafè,<br>sense complicacions.",
+    "lede": "Una cafeteria petita i cuidada a la Rambla de Sant Jordi. Cafè fet al moment — calent o tebi, com el prefereixis —, pa de llavors per esmorzar i un local fresc, lluminós i amb música a un volum que deixa parlar.",
+    "ctaPrimary": "Com arribar-hi",
+    "ctaWhatsapp": "WhatsApp",
+    "statRating": "sobre 5 a Google",
+    "statReviews": "ressenyes a Google",
+    "statWhere": "Vilanova i la Geltrú"
+  },
+
+  "about": {
+    "eyebrow": "La casa",
+    "title": "Petita, lluminosa<br>i amb l'aire a punt.",
+    "p1": "Cafeteria zoe és a la Rambla de Sant Jordi, al centre de Vilanova i la Geltrú. És un local petit que es nota cuidat: ben il·luminat, amb música discreta i aire condicionat, una cosa que a l'estiu aquí s'agraeix de debò.",
+    "p2": "La Zoe atén darrere la barra i s'aprèn com t'agrada el cafè. Si el vols calent de veritat, ho diu i el serveix calent de veritat; si el prefereixes tebi, també. És d'aquells llocs on un torna per costum més que per novetat.",
+    "note": "Cafè, esmorzars i alguna cosa per picar, per prendre al local.",
+    "factAddress": "Adreça",
+    "factPhone": "Telèfon",
+    "factCuisine": "Què se serveix",
+    "cuisineValue": "Cafè, esmorzars i begudes"
+  },
+
+  "kitchen": {
+    "eyebrow": "La carta",
+    "title": "El que es demana aquí",
+    "lede": "Sense carta llarga. Aquestes són les coses que més surten quan la gent explica què ha pres."
+  },
+
+  "capabilities": {
+    "serviceOptions": "Servei",
+    "foodAndDrink": "Menjar i beure",
+    "atmosphere": "Ambient",
+    "amenities": "Instal·lacions",
+    "parking": "Aparcament",
+    "accessibility": "Accessibilitat",
+    "payments": "Pagaments",
+    "labels": {
+      "Dine-in": "Per prendre al local",
+      "Takeaway": "Per emportar",
+      "Delivery": "A domicili",
+      "Outdoor seating": "Terrassa exterior",
+      "Reservable": "Es pot reservar",
+      "Breakfast": "Esmorzars",
+      "Lunch": "Dinars",
+      "Dinner": "Sopars",
+      "Beer": "Cervesa",
+      "Wine": "Vi",
+      "Cocktails": "Còctels",
+      "Coffee": "Cafè",
+      "Dessert": "Postres",
+      "Vegetarian options": "Opcions vegetarianes",
+      "Air conditioning": "Aire condicionat",
+      "Good for children": "Apte per a nens",
+      "Menu for children": "Menú infantil",
+      "Good for groups": "Ideal per a grups",
+      "Live music": "Música en directe",
+      "Good for watching sports": "Per veure esport",
+      "Restroom": "Lavabos",
+      "Free parking lot": "Aparcament gratuït",
+      "Free street parking": "Estacionament gratuït al carrer",
+      "Wheelchair-accessible entrance": "Entrada accessible amb cadira de rodes",
+      "Wheelchair-accessible restroom": "Lavabo accessible amb cadira de rodes",
+      "Wheelchair-accessible seating": "Taules accessibles amb cadira de rodes",
+      "Credit cards": "Targetes de crèdit",
+      "Debit cards": "Targetes de dèbit",
+      "Contactless (NFC)": "Pagament sense contacte (NFC)",
+      "Cash only": "Només efectiu"
+    }
+  },
+
+  "reviews": {
+    "eyebrow": "Què diuen",
+    "title": "Els qui ja hi han passat",
+    "count": "{count} ressenyes",
+    "onGoogle": "a Google",
+    "readAll": "Veure totes les ressenyes a Google",
+    "write": "Escriure una ressenya",
+    "originalIn": "Original en {lang}"
+  },
+
+  "visit": {
+    "eyebrow": "Visita'ns",
+    "title": "A la Rambla de Sant Jordi",
+    "whatsapp": "WhatsApp",
+    "call": "Trucar",
+    "directions": "Com arribar-hi",
+    "directionsSub": "Obrir a Maps",
+    "googleListing": "Fitxa de Google",
+    "googleListingSub": "Fotos i ressenyes",
+    "openMap": "Obrir a Google Maps",
+    "note": "És al ple del centre, a tocar de la rambla. Si véns amb cotxe, busca aparcament als carrers del voltant."
+  },
+
+  "footer": {
+    "writeReview": "Escriure una ressenya",
+    "rights": "Tots els drets reservats.",
+    "dataNote": "Dades de Google Maps, actualitzades a {date}.",
+    "credit": "Les ressenyes pertanyen als seus autors."
+  },
+
+  "jsonLd": {
+    "cuisine": "Coffee, Breakfast"
+  },
+
+  "languageNames": {
+    "es": "castellà",
+    "ca": "català",
+    "en": "anglès"
+  }
+}

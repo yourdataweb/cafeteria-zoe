@@ -1,0 +1,24 @@
+{
+  "name": "Cafetería zoe",
+  "short_name": "Zoe",
+  "description": "Cafetería zoe, en la Rambla de Sant Jordi de Vilanova i la Geltrú. Café bien hecho, pan de semillas, aire acondicionado y un trato cercano. 5,0 sobre 5 en Google.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fdf9f2",
+  "theme_color": "#2a1a12",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "assets/photos/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/photos/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-label="Ilustración del interior de una cafetería luminosa con tazas de café">
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6efe2"/>
+      <stop offset="0.6" stop-color="#efe4d2"/>
+      <stop offset="1" stop-color="#e3d5be"/>
+    </linearGradient>
+    <linearGradient id="counter" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b98a5e"/>
+      <stop offset="1" stop-color="#8c6242"/>
+    </linearGradient>
+    <linearGradient id="win" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#cfe6ee"/>
+      <stop offset="0.55" stop-color="#e8f2f5"/>
+      <stop offset="1" stop-color="#f7f2e6"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="0.5" cy="0.45" r="0.55">
+      <stop offset="0" stop-color="#fff6d8" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#fff6d8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cup" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e8ded0"/>
+    </linearGradient>
+    <linearGradient id="coffee" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8a5a33"/>
+      <stop offset="1" stop-color="#4f2c15"/>
+    </linearGradient>
+    <linearGradient id="board" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2f2118"/>
+      <stop offset="1" stop-color="#1d140e"/>
+    </linearGradient>
+  </defs>
+
+  <!-- wall -->
+  <rect width="1600" height="900" fill="url(#wall)"/>
+
+  <!-- window with light streaming in -->
+  <g>
+    <rect x="150" y="90" width="470" height="430" rx="8" fill="url(#win)" stroke="#cbb99d" stroke-width="10"/>
+    <path d="M385 90v430M150 305h470" stroke="#cbb99d" stroke-width="10"/>
+    <circle cx="330" cy="180" r="150" fill="url(#sun)"/>
+    <g fill="#9dc3cf" opacity="0.55">
+      <path d="M150 400q60-40 120 0t120 0 120 0 110 0v120H150Z"/>
+    </g>
+    <!-- hanging plant -->
+    <g>
+      <path d="M560 300q30 60 4 120" stroke="#5f7a45" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <g fill="#6f8f4e">
+        <ellipse cx="556" cy="330" rx="20" ry="11" transform="rotate(-28 556 330)"/>
+        <ellipse cx="578" cy="372" rx="19" ry="10" transform="rotate(24 578 372)"/>
+        <ellipse cx="560" cy="412" rx="18" ry="10" transform="rotate(-18 560 412)"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- light shafts on floor -->
+  <g opacity="0.32" fill="#fff8e2">
+    <path d="M150 520h470l180 380H60Z"/>
+    <path d="M620 520h120l170 380H700Z"/>
+  </g>
+
+  <!-- chalkboard menu -->
+  <g transform="translate(760 150)">
+    <rect x="0" y="0" width="360" height="250" rx="10" fill="url(#board)" stroke="#8c6242" stroke-width="10"/>
+    <path d="M30 54h150" stroke="#f0e3cd" stroke-width="6" stroke-linecap="round" opacity="0.85"/>
+    <g stroke="#f0e3cd" stroke-width="4" stroke-linecap="round" opacity="0.62">
+      <path d="M30 96h96M30 128h120M30 160h84M30 192h140"/>
+      <path d="M250 96h70M250 128h56M250 160h64"/>
+    </g>
+    <path d="M30 26h300" stroke="#c98a3f" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+  </g>
+
+  <!-- shelves with jars and cups -->
+  <g transform="translate(1200 190)">
+    <rect x="0" y="120" width="300" height="12" rx="4" fill="#8c6242"/>
+    <g>
+      <rect x="24" y="62" width="52" height="58" rx="8" fill="#d9c8ae"/>
+      <rect x="92" y="44" width="44" height="76" rx="8" fill="#c9b393"/>
+      <rect x="152" y="72" width="58" height="48" rx="8" fill="#e6d8c1"/>
+      <g fill="#8a5a33" opacity="0.75">
+        <rect x="24" y="86" width="52" height="34" rx="4"/>
+        <rect x="92" y="72" width="44" height="48" rx="4"/>
+        <rect x="152" y="94" width="58" height="26" rx="4"/>
+      </g>
+      <!-- stacked cups -->
+      <g fill="url(#cup)" stroke="#cdbda3" stroke-width="2.5">
+        <path d="M232 106h56l-6 34h-44Z"/>
+        <path d="M238 76h44l-5 28h-34Z"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- counter -->
+  <rect x="0" y="620" width="1600" height="280" fill="url(#counter)"/>
+  <rect x="0" y="620" width="1600" height="16" fill="#cfa276" opacity="0.9"/>
+  <g stroke="#6f4a2e" stroke-width="3" opacity="0.4">
+    <path d="M0 700h1600M0 790h1600"/>
+    <path d="M240 636v244M600 636v244M980 636v244M1340 636v244"/>
+  </g>
+
+  <!-- espresso machine on the counter -->
+  <g transform="translate(1080 468)">
+    <rect x="0" y="60" width="230" height="120" rx="10" fill="#3b4a52" stroke="#28343a" stroke-width="4"/>
+    <rect x="16" y="24" width="198" height="42" rx="8" fill="#4a5a63"/>
+    <rect x="40" y="76" width="52" height="34" rx="5" fill="#c8b48f"/>
+    <rect x="118" y="76" width="52" height="34" rx="5" fill="#c8b48f"/>
+    <circle cx="196" cy="42" r="10" fill="#e8a33d"/>
+    <g stroke="#9aa8ae" stroke-width="6" stroke-linecap="round">
+      <path d="M78 110v22M158 110v22"/>
+    </g>
+    <g fill="url(#cup)" stroke="#cdbda3" stroke-width="2.5">
+      <path d="M62 132h32l-4 22H66Z"/>
+      <path d="M142 132h32l-4 22H146Z"/>
+    </g>
+  </g>
+
+  <!-- foreground cups -->
+  <g transform="translate(300 700)">
+    <ellipse cx="0" cy="90" rx="150" ry="34" fill="#7a5438" opacity="0.35"/>
+    <!-- saucer + cup -->
+    <ellipse cx="0" cy="70" rx="140" ry="34" fill="#fdfaf5" stroke="#d9cbb2" stroke-width="3"/>
+    <path d="M-72 6h144l-12 52a16 16 0 0 1-16 13h-88a16 16 0 0 1-16-13Z" fill="url(#cup)" stroke="#d9cbb2" stroke-width="3"/>
+    <ellipse cx="0" cy="10" rx="66" ry="15" fill="url(#coffee)"/>
+    <ellipse cx="0" cy="10" rx="40" ry="9" fill="#b07a45" opacity="0.75"/>
+    <!-- steam -->
+    <g stroke="#ffffff" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.55">
+      <path d="M-26-14c0-18 14-22 14-44"/>
+      <path d="M2-18c0-20 14-24 14-48"/>
+      <path d="M32-14c0-16 14-20 14-40"/>
+    </g>
+    <!-- handle -->
+    <path d="M74 20a34 34 0 0 1 0 46" fill="none" stroke="#d9cbb2" stroke-width="9"/>
+  </g>
+
+  <!-- croissant / seeded bread on a small plate -->
+  <g transform="translate(760 760)">
+    <ellipse cx="0" cy="40" rx="132" ry="30" fill="#fdfaf5" stroke="#d9cbb2" stroke-width="3"/>
+    <g fill="#d9a55f" stroke="#a8763a" stroke-width="3">
+      <path d="M-78 26q22-52 78-52t78 52q-30 14-78 14T-78 26Z"/>
+    </g>
+    <g stroke="#a8763a" stroke-width="3" opacity="0.8">
+      <path d="M-40 22q6-34 40-46M40 22q-6-34-40-46M0 26V-24"/>
+    </g>
+    <g fill="#f0dcb4">
+      <circle cx="-52" cy="14" r="5"/><circle cx="-18" cy="-4" r="5"/><circle cx="16" cy="-8" r="5"/>
+      <circle cx="48" cy="2" r="5"/><circle cx="66" cy="20" r="5"/>
+    </g>
+  </g>
+
+  <!-- small glass of water -->
+  <g transform="translate(520 660)">
+    <path d="M-26 0h52l-6 88h-40Z" fill="#e6f2f5" stroke="#c3d6db" stroke-width="3" opacity="0.95"/>
+    <path d="M-23 44h46l-4 40h-38Z" fill="#cfe6ee" opacity="0.9"/>
+  </g>
+
+  <!-- warm vignette -->
+  <rect width="1600" height="900" fill="#6b4a2c" opacity="0.05"/>
+</svg>

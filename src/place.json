@@ -1,0 +1,203 @@
+{
+  "place": {
+    "id": "ChIJtTIcSACHoxIRmP5bCGvKFyw",
+    "cid": "3177230623183732376",
+    "name": "Cafetería zoe",
+    "codeName": "cafeteria-zoe",
+    "shortName": "Zoe",
+    "formattedAddress": "Rambla de Sant Jordi, 08800 Vilanova i la Geltrú, Barcelona, Spain",
+    "street": "Rambla de Sant Jordi",
+    "streetNumber": "",
+    "neighbourhood": "",
+    "locality": "Vilanova i la Geltrú",
+    "region": "Barcelona",
+    "postalCode": "08800",
+    "country": "ES",
+    "latitude": 41.2258144,
+    "longitude": 1.7318611,
+    "primaryType": "coffee_shop",
+    "primaryTypeLabel": {
+      "es": "Cafetería",
+      "ca": "Cafeteria",
+      "en": "Coffee shop"
+    },
+    "types": [
+      "coffee_shop",
+      "cafe",
+      "food_store",
+      "store",
+      "point_of_interest",
+      "food",
+      "establishment"
+    ],
+    "phoneNational": "",
+    "phoneInternational": "",
+    "phoneE164": "",
+    "whatsappNumber": "",
+    "website": "",
+    "rating": 5.0,
+    "userRatingCount": 10,
+    "businessStatus": "OPERATIONAL",
+    "timeZone": "Europe/Madrid",
+    "plusCode": "8FH36PGJ+8P",
+    "localityLine": "Vilanova i la Geltrú"
+  },
+  "map": {
+    "embedUrl": "https://www.google.com/maps?q=41.2258144,1.7318611&z=17&hl=es&output=embed",
+    "placeUri": "https://maps.google.com/?cid=3177230623183732376",
+    "directionsUri": "https://www.google.com/maps/dir/?api=1&destination=41.2258144,1.7318611&destination_place_id=ChIJtTIcSACHoxIRmP5bCGvKFyw",
+    "reviewsUri": "https://www.google.com/maps/place//data=!4m4!3m3!1s0x12a38700481c32b5:0x2c17ca6b085bfe98!9m1!1b1",
+    "writeReviewUri": "https://search.google.com/local/writereview?placeid=ChIJtTIcSACHoxIRmP5bCGvKFyw",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x12a38700481c32b5:0x2c17ca6b085bfe98!10e5"
+  },
+  "social": {
+    "_comment": "The Places payload contains no Instagram, Facebook or TikTok profile for this business. Add a key with a full URL here and the icon appears automatically in the header and the mobile drawer.",
+    "google": "https://maps.google.com/?cid=3177230623183732376"
+  },
+  "reviews": [
+    {
+      "author": "Ekaterina Dushko",
+      "avatar": "https://lh3.googleusercontent.com/a-/ALV-UjXIGo6UN05FT6J5Qw9cKRCToE-skM4EIBMZP0FYzMnKMgACXDaB=s128-c0x00000000-cc-rp-mo-ba3",
+      "rating": 5,
+      "lang": "en",
+      "date": "2025-06-12",
+      "text": "A new and pretty good coffee shop. The girl who works here is very friendly and you can tell she cares about the place's appearance. They always ask me if I want my coffee lukewarm or really hot — in other places “hot” means almost cold, but here it really does burn your tongue… and I love it. The prices are very good compared to other coffee shops, and the coffee tastes excellent. The air conditioning is a lifesaver in the summer here too."
+    },
+    {
+      "author": "matias emmanuel kuster",
+      "avatar": "https://lh3.googleusercontent.com/a/ACg8ocKuXvPurfQM8psK6gtdzcBAaMYo27EzDgsg7vOaFLICn7niVA=s128-c0x00000000-cc-rp-mo",
+      "rating": 5,
+      "lang": "en",
+      "date": "2025-08-17",
+      "text": "Pleasant atmosphere. The coffee is quite good compared to other bars. The place is very comfortable, well-lit, air-conditioned, and has music (not too loud). The staff is excellent, always very helpful."
+    },
+    {
+      "author": "Kanijo Kanoso VLife",
+      "avatar": "https://lh3.googleusercontent.com/a-/ALV-UjUZx1Vb4QtVww6nrRmh8UdxF9tFNRJjpSA3xqUAuFZ8nSHgMMc=s128-c0x00000000-cc-rp-mo-ba3",
+      "rating": 5,
+      "lang": "en",
+      "date": "2025-11-04",
+      "text": "Excellent cafe. Very good seeded bread, some of the best coffee in the area, pleasant atmosphere."
+    },
+    {
+      "author": "Olga",
+      "avatar": "https://lh3.googleusercontent.com/a/ACg8ocJjoK68GDIu5aMjDj9xEy40ixulRrcFzd5vWEt9CqcZe94HLA=s128-c0x00000000-cc-rp-mo",
+      "rating": 5,
+      "lang": "en",
+      "date": "2026-08-05",
+      "text": "Excellent coffee with milk and Zoe is a very nice and attentive person with customers."
+    },
+    {
+      "author": "Qui Que",
+      "avatar": "https://lh3.googleusercontent.com/a-/ALV-UjXF509-cIOLiG2rRW-P3EAeOky3KqLULboNYmNU_cBJ_HmUntTvTA=s128-c0x00000000-cc-rp-mo-ba5",
+      "rating": 5,
+      "lang": "en",
+      "date": "2025-11-03",
+      "text": "Highly recommended, very fast and friendly. Reasonable price."
+    }
+  ],
+  "features": {
+    "serviceOptions": [
+      {
+        "key": "Dine-in",
+        "value": true
+      }
+    ],
+    "foodAndDrink": [
+      {
+        "key": "Breakfast",
+        "value": true
+      },
+      {
+        "key": "Coffee",
+        "value": true
+      },
+      {
+        "key": "Beer",
+        "value": true
+      }
+    ],
+    "atmosphere": [
+      {
+        "key": "Air conditioning",
+        "value": true
+      },
+      {
+        "key": "Good for children",
+        "value": true
+      },
+      {
+        "key": "Live music",
+        "value": false
+      }
+    ],
+    "amenities": [
+      {
+        "key": "Restroom",
+        "value": true
+      }
+    ],
+    "accessibility": [
+      {
+        "key": "Wheelchair-accessible entrance",
+        "value": true
+      }
+    ],
+    "payments": [
+      {
+        "key": "Credit cards",
+        "value": true
+      },
+      {
+        "key": "Debit cards",
+        "value": true
+      },
+      {
+        "key": "Contactless (NFC)",
+        "value": true
+      },
+      {
+        "key": "Cash only",
+        "value": false
+      }
+    ]
+  },
+  "specialities": [
+    {
+      "key": "coffee",
+      "es": "Café",
+      "ca": "Cafè",
+      "en": "Coffee",
+      "note_es": "Caliente o templado, como lo pidas",
+      "note_ca": "Calent o tebi, com ho demanis",
+      "note_en": "Hot or lukewarm — you choose"
+    },
+    {
+      "key": "coffee-milk",
+      "es": "Café con leche",
+      "ca": "Cafè amb llet",
+      "en": "Coffee with milk",
+      "note_es": "El que más piden",
+      "note_ca": "El que més demanen",
+      "note_en": "The house favourite"
+    },
+    {
+      "key": "bread",
+      "es": "Pan de semillas",
+      "ca": "Pa de llavors",
+      "en": "Seeded bread",
+      "note_es": "Para desayunar",
+      "note_ca": "Per esmorzar",
+      "note_en": "For breakfast"
+    },
+    {
+      "key": "beer",
+      "es": "Cerveza",
+      "ca": "Cervesa",
+      "en": "Beer",
+      "note_es": "Bien fría",
+      "note_ca": "Ben freda",
+      "note_en": "Served cold"
+    }
+  ]
+}
