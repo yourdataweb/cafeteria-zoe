@@ -515,15 +515,19 @@ Sitemap: ${SITE}/sitemap.xml
 /** A static redirect page: meta refresh plus a real link, so JS-off and crawlers
     both reach the target, and noindex so the old path never competes in search. */
 function buildRedirect(to, from) {
-  const abs = new URL(to, `${SITE}/${from}`).href;
+  // The target must be relative to the directory holding this redirect page:
+  // './' inside /ca/ points back at /ca/ and would loop, so climb out of it.
+  const depth = from.split('/').filter(Boolean).length;
+  const rel = depth === 0 ? to : '../'.repeat(depth) + to.replace(/^\.\//, '');
+  const abs = new URL(rel, `${SITE}/${from}`).href;
   const label = { ca: 'Continua', es: 'Continúa', en: 'Continue' }[DEFAULT_LOCALE] || 'Continue';
   return `<!DOCTYPE html><html lang="${DEFAULT_LOCALE}"><head><meta charset="utf-8">
 <link rel="canonical" href="${abs}">
 <meta name="robots" content="noindex,follow">
-<meta http-equiv="refresh" content="0; url=${to}">
+<meta http-equiv="refresh" content="0; url=${rel}">
 <title>${label}</title>
-</head><body><p><a href="${to}">${label}</a></p>
-<script>location.replace(${JSON.stringify(to)});</script></body></html>`;
+</head><body><p><a href="${rel}">${label}</a></p>
+<script>location.replace(${JSON.stringify(rel)});</script></body></html>`;
 }
 
 /* Copy the place photo next to the other site art and record the file name the

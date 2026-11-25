@@ -287,7 +287,9 @@ for (const [from, to, target] of [['', 'es/', 'es'], ['es/', 'en/', 'en'], ['en/
 
 // stale locale paths must keep working: already-shared links point at /ca/
 const staleHtml = fs.readFileSync(new URL('../ca/index.html', import.meta.url), 'utf8');
-expect(/location\.replace\("(\.\/|\/cafeteria-zoe\/)"\)/.test(staleHtml), '/ca/ redirect missing or pointing outside the site');
+// From /ca/ the only correct relative root is '../': './' would re-enter /ca/ and loop.
+expect(/location\.replace\('\.\.\/'\)|location\.replace\("\.\.\/"\)/.test(staleHtml),
+  '/ca/ redirect must climb to the site root, not loop back into /ca/');
 expect(/rel="canonical"/.test(staleHtml) && /noindex/.test(staleHtml), '/ca/ redirect should be noindex with a canonical');
 expect(/<a href=/.test(staleHtml), '/ca/ redirect needs a JS-off fallback link');
 console.log('stale /ca/ redirect: ok');
