@@ -105,12 +105,14 @@ touch targets and WCAG contrast.
 
 ## Screenshot for the owner
 
+![Handover screenshot: tablet view with QR overlay](assets/photos/handover-tablet.png)
+
 ```bash
 node scripts/screenshot.mjs
 ```
 
 Renders the top of the page at tablet width (768 px) and writes
-`/tmp/cafeteria-zoe-tablet-qr.png`: the page with an overlay carrying a QR code
+`assets/photos/handover-tablet.png`: the page with an overlay carrying a QR code
 pointing at the live URL, bottom-right, and the caption *"Ja tens pàgina web:
 https://yourdataweb.github.io/cafeteria-zoe/"* alongside it. Used for handing
 the site over to the business owner.

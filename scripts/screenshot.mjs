@@ -13,14 +13,18 @@
  */
 import { createRequire } from 'node:module';
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT = resolve(__dirname, '..');
 
 const require = createRequire('/home/davidoc/.openclaw/workspace/');
 const puppeteer = require('puppeteer');
 const QRCode = require('qrcode');
 
 const BASE = process.env.BASE || 'https://yourdataweb.github.io/cafeteria-zoe/';
-const OUT = process.env.OUT || '/tmp/cafeteria-zoe-tablet-qr.png';
+const OUT = process.env.OUT || join(ROOT, 'assets', 'photos', 'handover-tablet.png');
 const SITE_URL = 'https://yourdataweb.github.io/cafeteria-zoe/';
 const CAPTION = 'Ja tens pàgina web:';
 
