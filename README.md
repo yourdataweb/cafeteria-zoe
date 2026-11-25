@@ -105,32 +105,27 @@ touch targets and WCAG contrast.
 
 ## Screenshot for the owner
 
-![Handover screenshot: tablet view with QR overlay](assets/photos/handover-tablet.png)
+![Handover screenshot: page top with QR overlay](assets/photos/handover.png)
 
 ```bash
 node scripts/screenshot.mjs
 ```
 
-Produces three handover images plus a print sheet:
+Produces `assets/photos/handover.png`: **1240 × 1713 px at 300 dpi**, i.e.
+**10.5 × 14.5 cm** printed. The resolution is written into the PNG (`pHYs`
+chunk), so image viewers and print dialogs report the physical size instead of
+guessing 72 dpi.
 
-| File | Size | Use |
-|---|---|---|
-| `handover-tablet.png` | 1536×2048 px (768×1024 CSS @2x) | screens, chat, sharing |
-| `handover-a4-quarter.png` | 1240×1754 px = 105×148.5 mm @300 dpi | one quarter of an A4 sheet |
-| `handover-a4-sheet.png` | 2480×3508 px (A4 @300 dpi) | four copies in a 2×2 grid with dashed cut marks |
-| `handover-a4-sheet.pdf` | A4, vector page box | printing at 100 % scale |
+The image shows the page top with an overlay: a QR code pointing at the live
+URL, bottom-right, and the caption *"Ja tens pàgina web:
+https://yourdataweb.github.io/cafeteria-zoe/"* beside it.
 
-Each image carries the page top with an overlay: a QR code pointing at the
-live URL, bottom-right, and the caption *"Ja tens pàgina web:
-https://yourdataweb.github.io/cafeteria-zoe/"* alongside it.
+The page renders at 820 CSS px so the card shows the tablet layout (nav bar
+visible) rather than the phone layout the site switches to at 780 px and below.
+The device pixel ratio is derived from the target width, so the output lands on
+the exact print size without resampling.
 
-The quarter and the sheet render the page at 820 CSS px so the printed card
-shows the tablet layout (nav bar visible) rather than the phone layout the site
-switches to at 780 px and below. The device pixel ratio is derived from the
-target width, so the output lands on the exact print size without resampling.
-
-For printing, prefer the PDF: set the printer to **100 % / actual size**, not
-"fit to page", or the four cards will not measure 105 × 148.5 mm.
+When printing, use **100 % / actual size**, not "fit to page".
 
 ## Deploy
 

@@ -1,13 +1,10 @@
 #!/usr/bin/env node
 /**
- * Handover screenshots — page top section with a QR overlay.
+ * Handover screenshot — page top section with a QR overlay.
  *
- * Two deliverables:
- *   1. handover-tablet.png     — 768×1024 CSS @2x (tablet), for screens/sharing
- *   2. handover-a4-quarter.png — 105×148.5 mm at 300 dpi = 1240×1754 px,
- *                                i.e. exactly one quarter of an A4 sheet
- *   3. handover-a4-sheet.png   — full A4 at 300 dpi (2480×3508) with four
- *                                copies in a 2×2 grid and dashed cut marks
+ * Single deliverable:
+ *   assets/photos/handover.png — 10.5 × 14.5 cm at 300 dpi (1240 × 1713 px),
+ *   with the DPI written into the PNG so the file reports its physical size.
  *
  *   node scripts/screenshot.mjs
  *   BASE=http://127.0.0.1:8100 node scripts/screenshot.mjs
@@ -18,6 +15,7 @@ import { createRequire } from 'node:module';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import zlib from 'node:zlib';
 
 const require = createRequire('/home/davidoc/.openclaw/workspace/');
 const puppeteer = require('puppeteer');
@@ -30,20 +28,23 @@ const PHOTOS = join(ROOT, 'assets', 'photos');
 const BASE = process.env.BASE || 'https://yourdataweb.github.io/cafeteria-zoe/';
 const SITE_URL = 'https://yourdataweb.github.io/cafeteria-zoe/';
 
-/* A4 at 300 dpi. A quarter is 105 × 148.5 mm. */
-const A4 = { w: 2480, h: 3508 };
-const QUARTER = { w: 1240, h: 1754 }; // 105 × 148.5 mm at 300 dpi
+/* ---------- target size ----------
+   10.5 × 14.5 cm at 300 dpi.
+   10.5 cm = 4.1339 in → 1240.16 px → 1240
+   14.5 cm = 5.7087 in → 1712.60 px → 1713
+   At 300 dpi those pixels measure 104.99 × 145.03 mm, i.e. within 0.03 mm. */
+const DPI = 300;
+const TARGET = { w: 1240, h: 1713 };
+const PPM = Math.round(DPI / 0.0254); // 11811 pixels per metre
 
-/* The quarter keeps the tablet layout so the printed card shows the tablet
-   presentation, not the narrow phone one. 820 CSS px (iPad Air width) is used
-   because the site switches to its mobile layout at 780 px and below: at 768
-   the hamburger replaces the nav, which reads poorly on paper. The device pixel
+/* The site switches to its mobile layout at 780 px and below, where the
+   hamburger replaces the nav bar. 820 CSS px (iPad Air width) keeps the tablet
+   presentation, which reads far better on a printed card. The device pixel
    ratio is derived from the target width so the output lands on the exact
-   print size. */
-const TABLET_CSS_WIDTH = 820;
-const QUARTER_DPR = QUARTER.w / TABLET_CSS_WIDTH; // ≈1.5122
-const QUARTER_CSS_HEIGHT = Math.round(QUARTER.h / QUARTER_DPR); // ≈1160
-const DPR = 2; // CSS px → device px for the screen/tablet variant
+   print size without resampling. */
+const CSS_WIDTH = 820;
+const DPR = (TARGET.w / CSS_WIDTH) * 1.004; // slight overshoot, cropped back to exact
+const CSS_HEIGHT = Math.ceil(TARGET.h / DPR) + 2; // ditto: always at least TARGET.h
 
 mkdirSync(PHOTOS, { recursive: true });
 
@@ -86,8 +87,8 @@ async function shoot(cssWidth, cssHeight, dpr) {
 
 /**
  * Composite the QR overlay onto a shot.
- * `cssWidth`/`cssHeight` are the CSS viewport the shot was taken at, so the
- * overlay scales with the layout instead of being hard-coded per size.
+ * Sizes are expressed as fractions of the CSS width so the overlay scales with
+ * the layout instead of being hard-coded per size.
  */
 async function compose(shotB64, cssWidth, cssHeight, dpr) {
   const composer = await browser.newPage();
@@ -97,7 +98,7 @@ async function compose(shotB64, cssWidth, cssHeight, dpr) {
     deviceScaleFactor: dpr
   });
 
-  const qrSize = Math.round(cssWidth * 0.215); // ≈22 mm when printed as a quarter
+  const qrSize = Math.round(cssWidth * 0.215); // ≈22 mm when printed
   const pad = Math.round(cssWidth * 0.032);
 
   const html = `<!DOCTYPE html>
@@ -160,8 +161,8 @@ async function compose(shotB64, cssWidth, cssHeight, dpr) {
 
 /**
  * Crop a PNG to an exact pixel size from the top-left corner.
- * The viewport height can round to a fractional pixel; this trims the sliver
- * so the printed size is exact without resampling the image.
+ * The viewport rounds to whole device pixels; this trims the sliver so the
+ * printed size is exact without resampling the image.
  */
 async function cropTo(pngBuffer, w, h) {
   const page = await browser.newPage();
@@ -177,93 +178,33 @@ async function cropTo(pngBuffer, w, h) {
   return out;
 }
 
-/* ---------- 1. tablet (768 × 1024 CSS @2x) ---------- */
-const tabletCss = { w: 768, h: 1024 };
-const tabletShot = await shoot(tabletCss.w, tabletCss.h, DPR);
-const tabletPng = await compose(tabletShot, tabletCss.w, tabletCss.h, DPR);
-writeFileSync(join(PHOTOS, 'handover-tablet.png'), tabletPng);
-console.log('handover-tablet.png     768×1024 CSS @2x');
+/**
+ * Insert a pHYs chunk so the PNG declares its resolution. Without it the file
+ * is just pixels and a print dialog or image editor has no idea that 1240 px
+ * are meant to be 10.5 cm wide. The chunk goes right after IHDR, which is
+ * always 8 (signature) + 25 (IHDR) = 33 bytes into the file.
+ */
+function withDpi(png, ppm) {
+  const type = Buffer.from('pHYs', 'ascii');
+  const data = Buffer.alloc(9);
+  data.writeUInt32BE(ppm, 0);
+  data.writeUInt32BE(ppm, 4);
+  data[8] = 1; // unit: metre
+  const length = Buffer.alloc(4);
+  length.writeUInt32BE(9, 0);
+  const crc = Buffer.alloc(4);
+  crc.writeUInt32BE(zlib.crc32(Buffer.concat([type, data])) >>> 0, 0);
+  const chunk = Buffer.concat([length, type, data, crc]);
+  return Buffer.concat([png.subarray(0, 33), chunk, png.subarray(33)]);
+}
 
-/* ---------- 2. A4 quarter (1240 × 1754 px = 105 × 148.5 mm @300dpi) ---------- */
-const quarterCss = { w: TABLET_CSS_WIDTH, h: QUARTER_CSS_HEIGHT };
-const quarterShot = await shoot(quarterCss.w, quarterCss.h, QUARTER_DPR);
-const quarterPngRaw = await compose(quarterShot, quarterCss.w, quarterCss.h, QUARTER_DPR);
-const quarterPng = await cropTo(quarterPngRaw, QUARTER.w, QUARTER.h);
-writeFileSync(join(PHOTOS, 'handover-a4-quarter.png'), quarterPng);
-console.log(`handover-a4-quarter.png ${QUARTER.w}×${QUARTER.h} px (105×148.5 mm @300 dpi)`);
+const shot = await shoot(CSS_WIDTH, CSS_HEIGHT, DPR);
+const composed = await compose(shot, CSS_WIDTH, CSS_HEIGHT, DPR);
+const cropped = await cropTo(composed, TARGET.w, TARGET.h);
+const final = withDpi(cropped, PPM);
 
-/* ---------- 3. A4 sheet, 2×2 grid with cut marks ---------- */
-const composer = await browser.newPage();
-await composer.setViewport({ width: A4.w, height: A4.h, deviceScaleFactor: 1 });
-
-const cellW = QUARTER.w;
-const cellH = QUARTER.h;
-const q64 = quarterPng.toString('base64');
-
-const sheetHtml = `<!DOCTYPE html>
-<html><head><meta charset="utf-8"><style>
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: #fff; }
-  .sheet {
-    position: relative; width: ${A4.w}px; height: ${A4.h}px;
-    background: #fff;
-  }
-  .cell {
-    position: absolute; width: ${cellW}px; height: ${cellH}px; overflow: hidden;
-  }
-  .cell img { width: 100%; height: 100%; display: block; }
-  .c1 { left: 0; top: 0; }
-  .c2 { left: ${cellW}px; top: 0; }
-  .c3 { left: 0; top: ${cellH}px; }
-  .c4 { left: ${cellW}px; top: ${cellH}px; }
-  /* cut marks: dashed guides at the centre lines */
-  .cut-v {
-    position: absolute; left: ${cellW - 1}px; top: 0; width: 0; height: ${A4.h}px;
-    border-left: 2px dashed #b9b9b9;
-  }
-  .cut-h {
-    position: absolute; top: ${cellH - 1}px; left: 0; height: 0; width: ${A4.w}px;
-    border-top: 2px dashed #b9b9b9;
-  }
-</style></head>
-<body>
-  <div class="sheet">
-    <div class="cell c1"><img src="data:image/png;base64,${q64}" alt=""></div>
-    <div class="cell c2"><img src="data:image/png;base64,${q64}" alt=""></div>
-    <div class="cell c3"><img src="data:image/png;base64,${q64}" alt=""></div>
-    <div class="cell c4"><img src="data:image/png;base64,${q64}" alt=""></div>
-    <div class="cut-v"></div>
-    <div class="cut-h"></div>
-  </div>
-</body></html>`;
-
-await composer.setContent(sheetHtml, { waitUntil: 'networkidle0' });
-await new Promise((r) => setTimeout(r, 400));
-const sheetPng = await composer.screenshot({ type: 'png' });
-writeFileSync(join(PHOTOS, 'handover-a4-sheet.png'), sheetPng);
-console.log('handover-a4-sheet.png   2480×3508 px (A4 @300 dpi, 2×2 with cut marks)');
-
-/* A print-ready PDF is more faithful than a PNG for physical printing: the page
-   box is exactly A4 and the four cards land at their true millimetre size. */
-const pdfPage = await browser.newPage();
-await pdfPage.setContent(
-  `<html><head><style>
-     @page { size: A4; margin: 0; }
-     html, body { margin: 0; padding: 0; }
-     img { display: block; width: 210mm; height: 297mm; }
-   </style></head><body>
-     <img src="data:image/png;base64,${sheetPng.toString('base64')}" alt="">
-   </body></html>`,
-  { waitUntil: 'load' }
-);
-await pdfPage.pdf({
-  path: join(PHOTOS, 'handover-a4-sheet.pdf'),
-  format: 'A4',
-  printBackground: true,
-  margin: { top: 0, right: 0, bottom: 0, left: 0 }
-});
-await pdfPage.close();
-console.log('handover-a4-sheet.pdf   A4, four cards, print at 100% scale');
+writeFileSync(join(PHOTOS, 'handover.png'), final);
+console.log(`handover.png  ${TARGET.w}×${TARGET.h} px @ ${DPI} dpi = 10.5 × 14.5 cm`);
+console.log(`QR target: ${SITE_URL}`);
 
 await browser.close();
-console.log(`\nQR target: ${SITE_URL}`);
