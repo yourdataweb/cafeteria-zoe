@@ -40,6 +40,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/styles.css">
 
+<script>
+  /* Applied before first paint so returning visitors never see the notice flash. */
+  try {
+    if (localStorage.getItem('cookie-consent-v1') === 'accepted') {
+      document.documentElement.classList.add('js-consent');
+    }
+  } catch (e) { /* storage blocked */ }
+</script>
 <script type="application/ld+json">{
   "@context": "https://schema.org",
   "@type": "CafeOrCoffeeShop",
@@ -386,10 +394,14 @@
       </div>
 
       <div class="map-card">
+        <div class="map-gate" id="map-gate">
+          <p class="map-gate-text">El mapa de Google pot instal·lar galetes. Accepta l&#39;avís per carregar-lo.</p>
+          <button class="cookie-btn cookie-btn--primary" type="button" id="map-load">Carregar el mapa</button>
+        </div>
         <iframe
           id="map-frame"
           title="Mapa amb la ubicació de Cafeteria zoe a la Rambla de Sant Jordi, Vilanova i la Geltrú"
-          src="https://www.google.com/maps?q=41.2258144,1.7318611&amp;z=17&amp;hl=es&amp;output=embed"
+          data-src="https://www.google.com/maps?q=41.2258144,1.7318611&amp;z=17&amp;hl=es&amp;output=embed"
           width="100%" height="100%"
           style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
         <a class="map-link" href="https://maps.google.com/?cid=3177230623183732376" target="_blank" rel="noopener noreferrer">
@@ -421,6 +433,17 @@
     <p>Dades de Google Maps, actualitzades a novembre 2026.</p>
   </div>
 </footer>
+
+<div class="cookie-banner" id="cookie-banner" role="region" aria-label="Avís de galetes">
+  <div class="cookie-inner">
+    <p class="cookie-text">Fem servir emmagatzematge tècnic bàsic per recordar el teu idioma i la teva elecció. El mapa de Google que veus més avall pot instal·lar les seves pròpies galetes.</p>
+    <div class="cookie-actions">
+      <button class="cookie-btn cookie-btn--primary" type="button" id="cookie-accept">Acceptar</button>
+      <button class="cookie-btn cookie-btn--link" type="button" id="cookie-more" aria-expanded="false" aria-controls="cookie-detail">Més informació</button>
+    </div>
+    <p class="cookie-detail" id="cookie-detail" hidden>Aquest lloc no fa servir galetes publicitàries ni de seguiment. Només desa al teu navegador el teu idioma i que has acceptat aquest avís. El mapa incrustat és un servei de Google i es regeix per la seva pròpia política.</p>
+  </div>
+</div>
 
 <script src="../assets/js/app.js" defer></script>
 </body>

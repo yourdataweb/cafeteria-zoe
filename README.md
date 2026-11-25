@@ -21,45 +21,6 @@ Hand-written HTML, CSS and vanilla JS with a small dependency-free build step. N
 
 Lowercase ASCII, hyphen-separated, no edge hyphens — valid as an RFC 1123 DNS label (≤63 chars), a GitHub repository name and an S3 bucket prefix.
 
-## Data source
-
-Business facts come from the Google Places API (New) payload in the `geoleads`
-dataset, file `data/places/vilanova_i_la_geltru_catalonia_spain.csv`, place ID
-`ChIJtTIcSACHoxIRmP5bCGvKFyw`.
-
-| Field | Value |
-|---|---|
-| Address | Rambla de Sant Jordi, 08800 Vilanova i la Geltrú |
-| Primary type | `coffee_shop` |
-| Rating | 5.0 from 10 reviews |
-| Phone | **none in the payload** |
-| Website | none |
-| Social profiles | none beyond the Google listing |
-
-> A second record, **Zoe Bar** (`ChIJ4epxHACHoxIRtYXHVgr9MRY`), sits at Rambla
-> de Sant Jordi 5 and is rated **2.0**. It is a different business and was
-> deliberately **not** used. If the client intended that one, the data would
-> make a very different site.
-
-## What the data does and does not drive
-
-| Rule | Behaviour here |
-|---|---|
-| `rating > 4` | Star badge shown (5.0 → shown) |
-| `user_rating_count > 50` | **Not shown** — only 10 reviews |
-| phone is a mobile | No phone exists → **no WhatsApp, no tel: link, no floating button** |
-| review rating ≥ 4 | Testimonials rendered, longest first, max 3 |
-| `raw_price_range` | **Not published** (explicitly excluded) |
-| opening hours | **Not published** (explicitly excluded, and empty in the payload) |
-
-The absence of a phone number is handled in the build, not in the template: the
-address card omits the phone row entirely and the contact block simply shows
-Directions and the Google listing. No empty `tel:` or `wa.me` href is emitted
-anywhere — asserted by `scripts/verify.mjs`.
-
-Neighbourhood and street number were **not** invented: the payload gives
-neither, so the address renders as street, postcode and town only.
-
 ## Structure
 
 ```
@@ -100,6 +61,29 @@ Every locale is real server-rendered HTML — not a JS language swap. Each has i
 own `<html lang>`, canonical URL, `og:locale`, and a reciprocal `hreflang` set
 for all three languages plus `x-default`.
 
+## Content model
+
+All business content lives in `src/place.json`; UI strings live in
+`src/i18n/{es,ca,en}.json`. The template only holds markup and markers, so
+changing a fact or a sentence never requires touching HTML.
+
+Optional fields degrade cleanly: if a value is absent, the corresponding block
+is not rendered rather than being emitted empty. No placeholder or dead link is
+ever shipped.
+
+## Cookies and consent
+
+The site sets no advertising or tracking cookies. It stores one
+`localStorage` key (`cookie-consent-v1`) recording that the visitor accepted the
+notice. The Google Maps iframe is gated behind that consent: the embed URL sits
+in `data-src` and is only promoted to `src` once the visitor accepts, so no
+third-party request is made before consent. A small inline script in `<head>`
+applies the accepted state before first paint, so returning visitors never see
+the notice flash.
+
+The map is reachable without consent through the "Google Maps" link, which is a
+plain navigation, not an embed.
+
 ## Verification
 
 ```bash
@@ -119,12 +103,33 @@ map, no published hours or prices, and no horizontal overflow.
 `audit-layout.mjs` measures 3 locales × 5 viewports for overflow, clipped text,
 touch targets and WCAG contrast.
 
+## Screenshot for the owner
+
+```bash
+node scripts/screenshot.mjs
+```
+
+Renders the top of the page at tablet width (768 px) and writes
+`/tmp/cafeteria-zoe-tablet-qr.png`: the page with an overlay carrying a QR code
+pointing at the live URL, bottom-right, and the caption *"Ja tens pàgina web:
+https://yourdataweb.github.io/cafeteria-zoe/"* alongside it. Used for handing
+the site over to the business owner.
+
 ## Deploy
 
 Push to `main`; the workflow builds and deploys. First-time setup:
 **Settings → Pages → Source: GitHub Actions**.
 
-## Attribution
+## Accessibility and SEO
 
-Business data from the Google Maps Places API. Review text and reviewer avatars
-belong to their authors. The map embed is served by Google Maps.
+- Semantic landmarks, one `h1` per page, no heading-level jumps
+- Skip link, visible focus rings, ≥44 px touch targets
+- Colour pairs checked against WCAG AA in `audit-layout.mjs`
+- `CafeOrCoffeeShop` JSON-LD per locale, canonical + `hreflang` set, Open Graph and
+  Twitter cards, `sitemap.xml`, `robots.txt`
+- Every `<img>` has an `alt`; decorative ones use `alt=""`
+
+## Third-party content
+
+Review text and reviewer avatars belong to their authors. The map embed is
+served by Google Maps.

@@ -51,7 +51,7 @@
     "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x12a38700481c32b5:0x2c17ca6b085bfe98!10e5"
   },
   "social": {
-    "_comment": "The Places payload contains no Instagram, Facebook or TikTok profile for this business. Add a key with a full URL here and the icon appears automatically in the header and the mobile drawer.",
+    "_comment": "No Instagram, Facebook or TikTok profile is known for this business. Add a key with a full URL here and the icon appears automatically in the header and the mobile drawer.",
     "google": "https://maps.google.com/?cid=3177230623183732376"
   },
   "reviews": [

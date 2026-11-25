@@ -4,7 +4,7 @@
  * beyond puppeteer.
  *
  *   node scripts/verify.mjs
- *   BASE=http://127.0.0.1:8099/ SHOTS=/tmp/entre-tapas node scripts/verify.mjs
+ *   BASE=http://127.0.0.1:8099/ SHOTS=/tmp/cafeteria-zoe-shots node scripts/verify.mjs
  */
 import { createRequire } from 'node:module';
 const require = createRequire('/home/davidoc/.openclaw/workspace/');
@@ -12,7 +12,7 @@ const puppeteer = require('puppeteer');
 const fs = require('node:fs');
 
 const BASE = process.env.BASE || 'http://127.0.0.1:8099/';
-const SHOTS = process.env.SHOTS || '/tmp/entre-tapas-shots';
+const SHOTS = process.env.SHOTS || '/tmp/cafeteria-zoe-shots';
 fs.mkdirSync(SHOTS, { recursive: true });
 
 const LOCALES = [
@@ -88,6 +88,20 @@ async function inspect(url, label) {
       ogLocale: q('meta[property="og:locale"]')?.content,
       ogAlternates: qa('meta[property="og:locale:alternate"]').map((m) => m.content),
       mapSrc: q('#map-frame')?.src || '',
+      mapDataSrc: q('#map-frame')?.getAttribute('data-src') || '',
+      cookieBanner: Boolean(q('#cookie-banner')),
+      cookieBannerVisible: (() => {
+        const b = q('#cookie-banner');
+        if (!b) return false;
+        const cs = getComputedStyle(b);
+        return cs.display !== 'none' && cs.visibility !== 'hidden';
+      })(),
+      mapGateVisible: (() => {
+        const g = q('#map-gate');
+        if (!g) return false;
+        const cs = getComputedStyle(g);
+        return cs.display !== 'none' && cs.visibility !== 'hidden';
+      })(),
       mapTitle: q('#map-frame')?.title,
       structured: jsonLd,
       skipLink: q('.skip')?.textContent?.trim(),
@@ -115,7 +129,7 @@ async function inspect(url, label) {
   expect(data.langOpts.length === 3, `${label}: expected 3 language options, got ${data.langOpts.length}`);
   expect(data.langOpts.filter((o) => o.active).length === 1, `${label}: exactly one language should be active`);
   expect(data.reviews >= 1, `${label}: no testimonials rendered`);
-  // This business has no phone number in the Places payload, so the correct
+  // This business has no phone number in its data, so the correct
   // outcome is no tel: link, no wa.me link and no floating WhatsApp button.
   expect(data.waLinks === 0, `${label}: WhatsApp links must not render without a phone number, found ${data.waLinks}`);
   expect(!data.waFab, `${label}: WhatsApp floating button must not render without a phone number`);
@@ -127,7 +141,12 @@ async function inspect(url, label) {
   expect(data.structured?.telephone === undefined || data.structured?.telephone === '', `${label}: JSON-LD must not invent a telephone number`);
   // 10 reviews is below the 50 threshold, so the count must stay hidden.
   expect(!/\b10\b/.test(data.ratingMeta || ''), `${label}: review count must stay hidden under 50, got "${data.ratingMeta}"`);
-  expect(data.mapSrc.includes('output=embed'), `${label}: map iframe not an embed`);
+  // The map embed is consent-gated: the URL lives in data-src until accepted.
+  expect(data.mapDataSrc.includes('output=embed'), `${label}: map iframe data-src not an embed`);
+  expect(!data.mapSrc, `${label}: map iframe must not have src before consent, found "${data.mapSrc}"`);
+  expect(data.cookieBanner, `${label}: missing cookie notice`);
+  expect(data.cookieBannerVisible, `${label}: cookie notice should be visible on a first visit`);
+  expect(data.mapGateVisible, `${label}: map gate should be visible before consent`);
   expect(data.hoursList === 0, `${label}: opening hours must not be published`);
   expect(data.priceText.length === 0, `${label}: price per person must not be published`);
   // Every <img> must carry an alt attribute; decorative ones are empty by design
@@ -144,6 +163,53 @@ const results = [];
 for (const { locale, path, label } of LOCALES) {
   results.push(await inspect(BASE + path, label));
 }
+
+/* ---------- consent flow: accept, then the map loads ---------- */
+console.log('\n===== consent flow =====');
+/* An isolated browser context: its own localStorage, so accepting consent here
+   cannot leak into the locale pages above (they share the default context). */
+const cctx = await browser.createBrowserContext();
+const cpage = await cctx.newPage();
+cpage.on('pageerror', (e) => errors.push('PAGEERROR: ' + e.message));
+cpage.on('console', (m) => { if (m.type() === 'error') errors.push('CONSOLE: ' + m.text()); });
+await cpage.setViewport({ width: 1440, height: 1080, deviceScaleFactor: 1 });
+await cpage.goto(BASE, { waitUntil: 'networkidle2' });
+await cpage.evaluate(() => { try { localStorage.removeItem('cookie-consent-v1'); } catch (e) {} });
+await cpage.reload({ waitUntil: 'networkidle2' });
+const beforeAccept = await cpage.evaluate(() => ({
+  banner: getComputedStyle(document.querySelector('#cookie-banner')).display !== 'none',
+  gate: getComputedStyle(document.querySelector('#map-gate')).display !== 'none',
+  src: document.querySelector('#map-frame').getAttribute('src')
+}));
+console.log('before accept:', JSON.stringify(beforeAccept));
+expect(beforeAccept.banner === true, 'consent: notice should be visible before accepting');
+expect(beforeAccept.gate === true, 'consent: map gate should be visible before accepting');
+expect(!beforeAccept.src, 'consent: map iframe should have no src before accepting');
+
+await cpage.click('#cookie-accept');
+await new Promise((r) => setTimeout(r, 1200));
+const afterAccept = await cpage.evaluate(() => ({
+  banner: getComputedStyle(document.querySelector('#cookie-banner')).display !== 'none',
+  gate: getComputedStyle(document.querySelector('#map-gate')).display !== 'none',
+  src: document.querySelector('#map-frame').getAttribute('src'),
+  stored: localStorage.getItem('cookie-consent-v1')
+}));
+console.log('after accept:', JSON.stringify(afterAccept));
+expect(afterAccept.banner === false, 'consent: notice should hide after accepting');
+expect(afterAccept.gate === false, 'consent: map gate should hide after accepting');
+expect((afterAccept.src || '').includes('output=embed'), 'consent: map should load after accepting');
+expect(afterAccept.stored === 'accepted', 'consent: choice should be stored');
+
+/* The choice must persist across a reload. */
+await cpage.reload({ waitUntil: 'networkidle2' });
+await new Promise((r) => setTimeout(r, 900));
+const afterReload = await cpage.evaluate(() => ({
+  banner: getComputedStyle(document.querySelector('#cookie-banner')).display !== 'none',
+  src: document.querySelector('#map-frame').getAttribute('src')
+}));
+console.log('after reload:', JSON.stringify(afterReload));
+expect(afterReload.banner === false, 'consent: notice must stay hidden after reload');
+expect((afterReload.src || '').includes('output=embed'), 'consent: map must stay loaded after reload');
 
 // titles and h1s must differ per locale (real localized HTML, not a JS swap)
 const titles = new Set(results.map((r) => r.title));
@@ -213,5 +279,6 @@ expect(closed === true, 'Escape did not close the mobile drawer');
 console.log('\nERRORS:', errors.length ? JSON.stringify([...new Set(errors)], null, 2) : 'none');
 console.log('FAILURES:', failures.length ? JSON.stringify(failures, null, 2) : 'none');
 
+await cctx.close();
 await browser.close();
 process.exit(failures.length || errors.length ? 1 : 0);

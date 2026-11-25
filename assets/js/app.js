@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Entre Tapas — progressive enhancement
+   Cafetería zoe — progressive enhancement
    Content is server-rendered in every locale, so this file only adds
    behaviour: sticky header, mobile drawer, current year.
    Nothing here is required to read the page.
@@ -54,6 +54,70 @@
     else mq.addListener(onChange);
   }
 
+  /* ---------- cookie consent + map gate ---------- */
+  const CONSENT_KEY = 'cookie-consent-v1';
+
+  function readConsent() {
+    try { return localStorage.getItem(CONSENT_KEY); } catch (e) { return null; }
+  }
+
+  function writeConsent(value) {
+    try { localStorage.setItem(CONSENT_KEY, value); } catch (e) { /* private mode */ }
+  }
+
+  function loadMap() {
+    const frame = $('#map-frame');
+    const gate = $('#map-gate');
+    if (!frame || !gate) return;
+    const src = frame.dataset.src;
+    if (!src) return;
+    if (!frame.getAttribute('src')) frame.setAttribute('src', src);
+    gate.hidden = true;
+  }
+
+  function initCookies() {
+    const banner = $('#cookie-banner');
+    const accept = $('#cookie-accept');
+    const more = $('#cookie-more');
+    const detail = $('#cookie-detail');
+    const mapLoad = $('#map-load');
+
+    const accepted = readConsent() === 'accepted';
+
+    if (accepted) {
+      if (banner) banner.hidden = true;
+      loadMap();
+    } else {
+      if (banner) banner.hidden = false;
+      const gate = $('#map-gate');
+      if (gate) gate.hidden = false;
+    }
+
+    if (accept && banner) {
+      accept.addEventListener('click', () => {
+        writeConsent('accepted');
+        banner.hidden = true;
+        loadMap();
+      });
+    }
+
+    if (mapLoad) {
+      mapLoad.addEventListener('click', () => {
+        writeConsent('accepted');
+        if (banner) banner.hidden = true;
+        loadMap();
+      });
+    }
+
+    if (more && detail) {
+      more.addEventListener('click', () => {
+        const open = more.getAttribute('aria-expanded') === 'true';
+        more.setAttribute('aria-expanded', String(!open));
+        detail.hidden = open;
+      });
+    }
+  }
+
   /* ---------- misc ---------- */
   function initMisc() {
     const y = $('#year');
@@ -69,6 +133,7 @@
 
   function boot() {
     initHeader();
+    initCookies();
     initMisc();
   }
 

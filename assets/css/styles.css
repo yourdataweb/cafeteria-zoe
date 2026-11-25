@@ -1,6 +1,6 @@
 /* ==========================================================================
-   Entre Tapas — tapas restaurant
-   Theme: warm tavern. Terracotta, olive, cream paper, dark wood, saffron.
+   Cafetería zoe — coffee shop
+   Theme: warm café. Terracotta, olive, cream paper, dark wood, saffron.
    ========================================================================== */
 
 :root {
@@ -738,7 +738,28 @@ h3 { font-size: clamp(1.1rem, 1rem + .5vw, 1.35rem); }
   border: 1px solid var(--cream-200);
   background: var(--cream-200);
 }
-.map-card iframe { width: 100%; height: 100%; min-height: 460px; filter: saturate(1.05); }
+.map-card iframe { width: 100%; height: 100%; min-height: 460px; filter: saturate(1.05); border: 0; }
+.map-gate {
+  position: absolute; inset: 0;
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: .9rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: var(--cream-100);
+  border: 1px dashed var(--cream-200);
+  border-radius: var(--radius-lg);
+}
+.map-gate[hidden] { display: none; }
+.map-gate-text {
+  max-width: 30ch;
+  font-size: .92rem;
+  line-height: 1.5;
+  color: var(--ink-mute);
+  margin: 0;
+}
 .map-link {
   position: absolute; left: 1rem; bottom: 1rem;
   display: inline-flex; align-items: center; gap: .45rem;
@@ -853,6 +874,72 @@ h3 { font-size: clamp(1.1rem, 1rem + .5vw, 1.35rem); }
 }
 
 /* ==========================================================================
+   COOKIE NOTICE (GDPR)
+   ========================================================================== */
+.cookie-banner {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 90;
+  background: var(--wood-800);
+  color: rgba(255, 255, 255, .86);
+  border-top: 1px solid rgba(255, 255, 255, .14);
+  box-shadow: 0 -6px 24px rgba(35, 21, 15, .18);
+  padding: 1rem max(1rem, env(safe-area-inset-left)) calc(1rem + env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-right));
+}
+.cookie-banner[hidden] { display: none; }
+/* Returning visitors: the inline head script sets this class before first paint. */
+html.js-consent .cookie-banner { display: none; }
+html.js-consent .map-gate { display: none; }
+.cookie-inner {
+  max-width: var(--wrap);
+  margin-inline: auto;
+  display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.4rem;
+}
+.cookie-text {
+  flex: 1 1 26rem;
+  font-size: .87rem;
+  line-height: 1.5;
+  margin: 0;
+}
+.cookie-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.cookie-btn {
+  font: inherit;
+  font-size: .87rem;
+  font-weight: 600;
+  min-height: 44px;
+  padding: .6rem 1.25rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+}
+.cookie-btn--primary {
+  background: var(--saffron-500);
+  color: var(--wood-900);
+}
+.cookie-btn--primary:hover { background: var(--saffron-400); }
+.cookie-btn--link {
+  background: transparent;
+  color: rgba(255, 255, 255, .82);
+  border-color: rgba(255, 255, 255, .35);
+}
+.cookie-btn--link:hover { border-color: rgba(255, 255, 255, .7); color: #fff; }
+.cookie-btn:focus-visible {
+  outline: 2px solid var(--saffron-400);
+  outline-offset: 2px;
+}
+.cookie-detail {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: .82rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, .68);
+  padding-top: .35rem;
+  border-top: 1px solid rgba(255, 255, 255, .12);
+}
+.cookie-detail[hidden] { display: none; }
+
+/* ==========================================================================
    MOTION / PRINT
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
@@ -865,7 +952,7 @@ h3 { font-size: clamp(1.1rem, 1rem + .5vw, 1.35rem); }
 }
 
 @media print {
-  .site-header, .wa-fab, .hero-actions, .map-card { display: none; }
+  .site-header, .wa-fab, .hero-actions, .map-card, .cookie-banner { display: none; }
   body { background: #fff; color: #000; }
   .hero { min-height: auto; color: #000; padding-block: 2rem; }
   .hero-media, .hero-scrim { display: none; }

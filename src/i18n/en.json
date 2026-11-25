@@ -150,6 +150,16 @@
     "cuisine": "Coffee, Breakfast"
   },
 
+  "cookie": {
+    "aria": "Cookie notice",
+    "text": "We use basic technical storage to remember your language and your choice. The Google map below may set its own cookies.",
+    "accept": "Accept",
+    "more": "More information",
+    "moreText": "This site uses no advertising or tracking cookies. It only stores your language and the fact that you accepted this notice in your browser. The embedded map is a Google service and follows its own policy.",
+    "mapGate": "The Google map may set cookies. Accept the notice to load it.",
+    "mapLoad": "Load the map"
+  },
+
   "languageNames": {
     "es": "Spanish",
     "ca": "Catalan",

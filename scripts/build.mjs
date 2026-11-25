@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Static site build — Entre Tapas.
+ * Static site build — Cafetería zoe.
  *
  * Reads src/template.html + src/place.json + src/i18n/{es,ca,en}.json and emits:
  *   /       → Spanish (default)
@@ -279,7 +279,7 @@ function buildJsonLd(place, dict, url) {
       .map(([, v]) => v),
     publicAccess: true
   };
-  // Only publish the phone when the Places payload actually had one.
+  // Only publish the phone when the business data actually has one.
   if (place.phoneInternational) data.telephone = place.phoneInternational;
   return JSON.stringify(data, null, 2);
 }
