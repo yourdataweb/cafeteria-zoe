@@ -31,15 +31,15 @@ jobs:
 
       - name: Fail on unresolved template holes or markers
         run: |
-          files="index.html ca/index.html en/index.html"
+          files="index.html es/index.html en/index.html"
           if grep -qE '\{\{[a-zA-Z0-9_.]+\}\}' $files; then
             echo "::error::Unresolved {{i18n}} holes in generated HTML"
             grep -oE '\{\{[a-zA-Z0-9_.]+\}\}' $files | sort -u
             exit 1
           fi
-          if grep -qE '<!--(SOCIAL|LANG|WHATSAPP_[A-Z_]+|RATING_[A-Z_]+|CAPABILITIES|REVIEWS|DISHES|HREFLANG|OG_ALTERNATES)-->' $files; then
+          if grep -qE '<!--(SOCIAL|LANG|WHATSAPP_[A-Z_]+|RATING_[A-Z_]+|CAPABILITIES|REVIEWS|DISHES|HERO_PHOTO|PHOTO_CREDIT|HREFLANG|OG_ALTERNATES)-->' $files; then
             echo "::error::Unresolved template markers in generated HTML"
-            grep -oE '<!--(SOCIAL|LANG|WHATSAPP_[A-Z_]+|RATING_[A-Z_]+|CAPABILITIES|REVIEWS|DISHES|HREFLANG|OG_ALTERNATES)-->' $files | sort -u
+            grep -oE '<!--(SOCIAL|LANG|WHATSAPP_[A-Z_]+|RATING_[A-Z_]+|CAPABILITIES|REVIEWS|DISHES|HERO_PHOTO|PHOTO_CREDIT|HREFLANG|OG_ALTERNATES)-->' $files | sort -u
             exit 1
           fi
 

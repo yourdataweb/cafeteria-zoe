@@ -15,11 +15,15 @@ const BASE = process.env.BASE || 'http://127.0.0.1:8099/';
 const SHOTS = process.env.SHOTS || '/tmp/cafeteria-zoe-shots';
 fs.mkdirSync(SHOTS, { recursive: true });
 
+// Derived from the build's own locale table so a default-locale change is verified,
+// not silently missed: ca is the default at /, es at /es/, en at /en/.
 const LOCALES = [
-  { locale: 'es', path: '', label: 'ES (default, /)' },
-  { locale: 'ca', path: 'ca/', label: 'CA (/ca/)' },
+  { locale: 'ca', path: '', label: 'CA (default, /)' },
+  { locale: 'es', path: 'es/', label: 'ES (/es/)' },
   { locale: 'en', path: 'en/', label: 'EN (/en/)' }
 ];
+
+const HREFLANG = { ca: 'ca-ES', es: 'es-ES', en: 'en-GB' };
 
 const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage'] });
 const page = await browser.newPage();
@@ -111,6 +115,22 @@ async function inspect(url, label) {
       contentImgsMissingAlt: qa('img').filter((i) => !i.hasAttribute('alt')).length,
       scrollW: document.documentElement.scrollWidth,
       innerW: window.innerWidth,
+      heroPhoto: (() => {
+        const img = q('.hero-media img');
+        if (!img) return null;
+        const r = img.getBoundingClientRect();
+        const credit = q('[data-photo-credit]');
+        const cs = credit ? getComputedStyle(credit) : null;
+        return {
+          src: img.getAttribute('src'),
+          alt: img.getAttribute('alt'),
+          natural: img.naturalWidth,
+          inTopHalf: r.top < window.innerHeight * 0.5 && r.height > 80,
+          creditText: credit ? credit.textContent.replace(/\s+/g, ' ').trim() : '',
+          creditHidden: !credit || credit.hidden || !cs ||
+            cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) === 0
+        };
+      })(),
       hoursList: qa('#hours-list li').length,
       priceText: document.body.innerText.match(/€\s?\d+[–-]\d+/g) || []
     };
@@ -126,6 +146,13 @@ async function inspect(url, label) {
   expect(jump === -1, `${label}: heading level jumps at index ${jump} in ${data.headingOrder}`);
   expect(Boolean(data.canonical), `${label}: missing canonical`);
   expect(data.hreflangs.length === 4, `${label}: expected 4 hreflang links, got ${data.hreflangs.length} (${data.hreflangs.join(' ')})`);
+  // Each locale must point at its own real path under the current default.
+  for (const { locale, path: p } of LOCALES) {
+    const want = `${HREFLANG[locale]}=https://yourdataweb.github.io/cafeteria-zoe/${p}`;
+    expect(data.hreflangs.includes(want), `${label}: hreflang missing or wrong: ${want}`);
+  }
+  expect(data.hreflangs.includes('x-default=https://yourdataweb.github.io/cafeteria-zoe/'),
+    `${label}: x-default must point at the default locale`);
   expect(data.langOpts.length === 3, `${label}: expected 3 language options, got ${data.langOpts.length}`);
   expect(data.langOpts.filter((o) => o.active).length === 1, `${label}: exactly one language should be active`);
   expect(data.reviews >= 1, `${label}: no testimonials rendered`);
@@ -153,7 +180,11 @@ async function inspect(url, label) {
   // (hero poster and the review avatars, which sit next to the author name).
   expect(data.contentImgsMissingAlt === 0, `${label}: ${data.contentImgsMissingAlt} img(s) without an alt attribute`);
   expect(data.avatarsWithoutAlt === 0, `${label}: review avatars must be decorative (alt="")`);
-  expect(data.decorativeCount >= 1, `${label}: the hero poster should be decorative`);
+  expect(data.decorativeCount >= 1, `${label}: at least one decorative image expected`);
+  // The brief asks for a business photo in the top half, credited to its author.
+  expect(Boolean(data.heroPhoto), `${label}: hero photo missing`);
+  expect(data.heroPhoto?.inTopHalf, `${label}: hero photo should sit in the top half of the page`);
+  expect(!data.heroPhoto?.creditHidden, `${label}: photo credit must be visible`);
   expect(data.scrollW <= data.innerW + 1, `${label}: horizontal overflow ${data.scrollW} > ${data.innerW}`);
 
   return data;
@@ -243,7 +274,7 @@ expect(tablet.s <= tablet.i + 1, `tablet: horizontal overflow ${tablet.s} > ${ta
 
 // language switching actually navigates between locales
 await page.setViewport({ width: 1440, height: 900 });
-for (const [from, to, target] of [['', 'ca/', 'ca'], ['ca/', 'en/', 'en'], ['en/', '', 'es']]) {
+for (const [from, to, target] of [['', 'es/', 'es'], ['es/', 'en/', 'en'], ['en/', '', 'ca']]) {
   await page.goto(BASE + from, { waitUntil: 'networkidle2' });
   await Promise.all([
     page.waitForNavigation({ waitUntil: 'networkidle2' }),
@@ -253,6 +284,13 @@ for (const [from, to, target] of [['', 'ca/', 'ca'], ['ca/', 'en/', 'en'], ['en/
   console.log(`switch ${from || '/'} → ${target}: ${page.url()} | lang=${landed}`);
   expect(landed.startsWith(target), `language switch to ${target} landed on lang=${landed}`);
 }
+
+// stale locale paths must keep working: already-shared links point at /ca/
+const staleHtml = fs.readFileSync(new URL('../ca/index.html', import.meta.url), 'utf8');
+expect(/location\.replace\("(\.\/|\/cafeteria-zoe\/)"\)/.test(staleHtml), '/ca/ redirect missing or pointing outside the site');
+expect(/rel="canonical"/.test(staleHtml) && /noindex/.test(staleHtml), '/ca/ redirect should be noindex with a canonical');
+expect(/<a href=/.test(staleHtml), '/ca/ redirect needs a JS-off fallback link');
+console.log('stale /ca/ redirect: ok');
 
 // mobile drawer + keyboard
 await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });

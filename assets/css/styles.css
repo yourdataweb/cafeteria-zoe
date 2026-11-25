@@ -366,7 +366,18 @@ h3 { font-size: clamp(1.1rem, 1rem + .5vw, 1.35rem); }
   overflow: hidden;
   isolation: isolate;
 }
-.hero-media { position: absolute; inset: 0; z-index: -1; }
+.hero-media { position: absolute; inset: 0; z-index: 0; }
+/* Google requires the photo's author to be credited wherever it is shown; the
+   text sits over the scrim's dark bottom edge so it stays readable. */
+.hero-credit {
+  position: absolute; z-index: 1;
+  right: max(1rem, 4vw); bottom: .5rem; margin: 0;
+  font-size: .66rem; line-height: 1.4;
+  color: rgba(242, 236, 225, .78);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .55);
+}
+.hero-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.hero-credit a:hover { color: #fff; }
 .hero-media img {
   width: 100%; height: 100%;
   object-fit: cover;
@@ -379,7 +390,7 @@ h3 { font-size: clamp(1.1rem, 1rem + .5vw, 1.35rem); }
     linear-gradient(to top, rgba(35, 21, 15, .95) 0%, rgba(35, 21, 15, .66) 38%, rgba(35, 21, 15, .14) 72%, rgba(35, 21, 15, .42) 100%);
 }
 
-.hero-inner { position: relative; max-width: 780px; }
+.hero-inner { position: relative; z-index: 1; max-width: 780px; }
 
 .hero-eyebrow {
   display: inline-flex;
@@ -955,7 +966,7 @@ html.js-consent .map-gate { display: none; }
   .site-header, .wa-fab, .hero-actions, .map-card, .cookie-banner { display: none; }
   body { background: #fff; color: #000; }
   .hero { min-height: auto; color: #000; padding-block: 2rem; }
-  .hero-media, .hero-scrim { display: none; }
+  .hero-media, .hero-scrim, .hero-credit { display: none; }
   .reviews { background: #fff; color: #000; }
   .reviews h2, .review blockquote { color: #000; }
   .review { border: 1px solid #ccc; }

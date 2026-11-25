@@ -2,17 +2,18 @@
 /**
  * Static site build — Cafetería zoe.
  *
- * Reads src/template.html + src/place.json + src/i18n/{es,ca,en}.json and emits:
- *   /       → Spanish (default)
- *   /ca/    → Catalan
+ * Reads src/template.html + src/place.json + src/i18n/{ca,es,en}.json and emits:
+ *   /       → Catalan (default)
+ *   /es/    → Spanish
  *   /en/    → English
+ *   /ca/    → redirect to / (the default locale used to live there)
  *
  * No dependencies. Each locale is real server-rendered HTML with its own lang,
  * canonical, og:locale and a reciprocal hreflang set, so search engines and
  * no-JS clients see the full content.
  */
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -25,10 +26,18 @@ const SITE = `https://yourdataweb.github.io/${CODE_NAME}`;
 const ORIGIN = 'https://yourdataweb.github.io';
 
 const LOCALES = [
-  { locale: 'es', pathPrefix: '' },
-  { locale: 'ca', pathPrefix: 'ca/' },
+  { locale: 'ca', pathPrefix: '' },
+  { locale: 'es', pathPrefix: 'es/' },
   { locale: 'en', pathPrefix: 'en/' }
 ];
+
+const DEFAULT_LOCALE = LOCALES[0].locale;
+
+/* Paths that used to hold a page and now must not 404. The QR codes and links
+   already handed out point here, so keep them alive with a redirect. */
+const REDIRECTS = [{ from: 'ca/', to: './' }];
+
+const HREFLANG = { ca: 'ca-ES', es: 'es-ES', en: 'en-GB' };
 
 const read = (p) => readFile(p, 'utf8');
 const readJSON = async (p) => JSON.parse(await read(p));
@@ -244,6 +253,27 @@ function buildReviews(place, dict) {
   }).join('');
 }
 
+/* Hero photo: the place photo from the data set, copied into the repo at build time
+   so the site never depends on a checkout outside it. Google requires the author
+   attribution to be shown wherever the photo appears, so the credit travels with it. */
+function buildHeroPhoto(place, dict) {
+  const photo = place.photo;
+  if (!photo || !photo.file) return '';
+  const alt = `${place.name} — ${dict.photo.alt}`;
+  return `<img src="{{root}}assets/photos/hero-photo.${escapeHTML(photo.ext || 'jpg')}"
+             alt="${escapeHTML(alt)}" width="${photo.width || 1600}" height="${photo.height || 1200}"
+             fetchpriority="high" decoding="async">`;
+}
+
+function buildPhotoCredit(place, dict) {
+  const photo = place.photo;
+  if (!photo || !photo.credit) return '';
+  const name = photo.creditUrl
+    ? `<a href="${escapeHTML(photo.creditUrl)}" target="_blank" rel="noopener nofollow">${escapeHTML(photo.credit)}</a>`
+    : escapeHTML(photo.credit);
+  return `<p class="hero-credit" data-photo-credit>${escapeHTML(dict.photo.credit)} ${name}</p>`;
+}
+
 function buildJsonLd(place, dict, url) {
   const data = {
     '@context': 'https://schema.org',
@@ -251,7 +281,16 @@ function buildJsonLd(place, dict, url) {
     '@id': url,
     name: place.name,
     url,
-    image: `${SITE}/assets/photos/og.png`,
+    image: place.photo?.file
+      ? {
+          '@type': 'ImageObject',
+          contentUrl: `${SITE}/assets/photos/${place.photo.file}`,
+          creditText: place.photo.credit || undefined,
+          creator: place.photo.credit
+            ? { '@type': 'Person', name: place.photo.credit, url: place.photo.creditUrl || undefined }
+            : undefined
+        }
+      : `${SITE}/assets/photos/og.png`,
     description: dict.meta.description,
     address: {
       '@type': 'PostalAddress',
@@ -300,7 +339,7 @@ function localeLinks(prefix) {
 
 function buildHreflang(dict) {
   return LOCALES.map(({ locale, pathPrefix }) =>
-    `<link rel="alternate" hreflang="${locale}" href="${SITE}/${pathPrefix}">`).join('\n')
+    `<link rel="alternate" hreflang="${HREFLANG[locale]}" href="${SITE}/${pathPrefix}">`).join('\n')
     + `\n<link rel="alternate" hreflang="x-default" href="${SITE}/">`;
 }
 
@@ -330,6 +369,9 @@ function buildPage({ dict, place, template }) {
     '<!--SOCIAL_MOBILE-->': socialBar(place.social, dict, { variant: 'mobile' }),
     '<!--LANG-->': langSwitch(dict, links, { variant: 'header' }),
     '<!--LANG_MOBILE-->': langSwitch(dict, links, { variant: 'mobile' }),
+
+    '<!--HERO_PHOTO-->': buildHeroPhoto(place, dict),
+    '<!--PHOTO_CREDIT-->': buildPhotoCredit(place, dict),
 
     '<!--DISHES-->': buildDishes(place, dict),
     '<!--CAPABILITIES-->': buildCapabilities(place, dict),
@@ -409,7 +451,11 @@ function buildPage({ dict, place, template }) {
       ratingFormatted: formatRating(place.rating, dict.locale),
       primaryTypeLabel: place.primaryTypeLabel[dict.locale] || place.primaryTypeLabel.es
     },
-    map: place.map
+    // The map embed carries the reader's language, not a fixed hl=es.
+    map: {
+      ...place.map,
+      embedUrl: (place.map?.embedUrl || '').replace(/hl=[a-z]{2}/, `hl=${dict.locale}`)
+    }
   };
 
   html = interpolate(html, ctx);
@@ -423,7 +469,7 @@ function buildSitemap() {
   const today = new Date().toISOString().slice(0, 10);
   const entries = LOCALES.map(({ pathPrefix }, i) => {
     const alternates = LOCALES.map(({ locale, pathPrefix: p }) =>
-      `    <xhtml:link rel="alternate" hreflang="${locale}" href="${SITE}/${p}"/>`).join('\n')
+      `    <xhtml:link rel="alternate" hreflang="${HREFLANG[locale]}" href="${SITE}/${p}"/>`).join('\n')
       + `\n    <xhtml:link rel="alternate" hreflang="x-default" href="${SITE}/"/>`;
     return `  <url>
     <loc>${SITE}/${pathPrefix}</loc>
@@ -466,6 +512,50 @@ Sitemap: ${SITE}/sitemap.xml
 
 /* ---------- main ---------- */
 
+/** A static redirect page: meta refresh plus a real link, so JS-off and crawlers
+    both reach the target, and noindex so the old path never competes in search. */
+function buildRedirect(to, from) {
+  const abs = new URL(to, `${SITE}/${from}`).href;
+  const label = { ca: 'Continua', es: 'Continúa', en: 'Continue' }[DEFAULT_LOCALE] || 'Continue';
+  return `<!DOCTYPE html><html lang="${DEFAULT_LOCALE}"><head><meta charset="utf-8">
+<link rel="canonical" href="${abs}">
+<meta name="robots" content="noindex,follow">
+<meta http-equiv="refresh" content="0; url=${to}">
+<title>${label}</title>
+</head><body><p><a href="${to}">${label}</a></p>
+<script>location.replace(${JSON.stringify(to)});</script></body></html>`;
+}
+
+/* Copy the place photo next to the other site art and record the file name the
+   template points at, so a repo checkout is self-contained. */
+async function stageHeroPhoto(place) {
+  if (!place.photo) return;
+
+  // A source path is only a local convenience for copying a new photo in; it is
+  // never required, because the photo belongs in the repository like any other asset.
+  if (place.photo.source) {
+    try {
+      const buf = await readFile(place.photo.source);
+      const ext = (place.photo.source.match(/\.[a-z0-9]+$/i) || ['.jpg'])[0].slice(1).toLowerCase();
+      await writeFile(join(ROOT, 'assets', 'photos', `hero-photo.${ext}`), buf);
+    } catch (err) {
+      console.warn(`  ! photo source unavailable (${err.code || err.message}); using the committed file`);
+    }
+  }
+
+  // Pick up whatever hero photo is checked in, so the build has no path outside the repo.
+  const dir = join(ROOT, 'assets', 'photos');
+  const found = (await readdir(dir)).find((f) => /^hero-photo\.(jpe?g|png|webp)$/i.test(f));
+  if (!found) {
+    // No photo must not break the build: the hero falls back to the illustration.
+    delete place.photo.file;
+    delete place.photo.ext;
+    return;
+  }
+  place.photo.file = found;
+  place.photo.ext = found.split('.').pop().toLowerCase();
+}
+
 async function main() {
   const template = await read(join(SRC, 'template.html'));
   const raw = await readJSON(join(SRC, 'place.json'));
@@ -476,8 +566,11 @@ async function main() {
     social: raw.social || {},
     reviews: raw.reviews || [],
     features: raw.features || {},
-    specialities: raw.specialities || []
+    specialities: raw.specialities || [],
+    photo: raw.photo || null
   };
+
+  await stageHeroPhoto(merged);
 
   const outputs = [];
 
@@ -502,13 +595,21 @@ async function main() {
   for (const { locale, pathPrefix, html } of outputs) {
     console.log(`  ${(pathPrefix || '') + 'index.html'}  (${locale}, ${html.length} bytes)`);
   }
+  // Stale locale paths keep working: a QR code or link already handed out points here.
+  for (const { from, to } of REDIRECTS) {
+    const dir = join(ROOT, from);
+    await mkdir(dir, { recursive: true });
+    await writeFile(join(dir, 'index.html'), buildRedirect(to, from), 'utf8');
+    console.log(`  ${from}index.html  (redirect → ${to})`);
+  }
+
   console.log('  sitemap.xml, manifest.webmanifest, robots.txt');
 
   // Build-time gate: no unresolved holes or markers may reach the output.
   let failed = false;
   for (const { locale, html } of outputs) {
     const holes = html.match(/\{\{[^}]+\}\}/g);
-    const markers = html.match(/<!--(SOCIAL|LANG|WHATSAPP_\w+|RATING_\w+|CAPABILITIES|REVIEWS|DISHES|HREFLANG|OG_ALTERNATES)[\w_]*-->/g);
+    const markers = html.match(/<!--(SOCIAL|LANG|WHATSAPP_\w+|RATING_\w+|CAPABILITIES|REVIEWS|DISHES|HERO_PHOTO|PHOTO_CREDIT|HREFLANG|OG_ALTERNATES)[\w_]*-->/g);
     if (holes) { console.error(`  ✗ ${locale}: unresolved holes ${[...new Set(holes)].join(', ')}`); failed = true; }
     if (markers) { console.error(`  ✗ ${locale}: unresolved markers ${[...new Set(markers)].join(', ')}`); failed = true; }
   }

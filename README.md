@@ -2,8 +2,8 @@
 
 Trilingual static website for **Cafetería zoe**, a coffee shop on Rambla de Sant Jordi, Vilanova i la Geltrú (Barcelona).
 
-**Live:** https://yourdataweb.github.io/cafeteria-zoe/
-**Català:** https://yourdataweb.github.io/cafeteria-zoe/ca/
+**Live (Català, default):** https://yourdataweb.github.io/cafeteria-zoe/
+**Español:** https://yourdataweb.github.io/cafeteria-zoe/es/
 **English:** https://yourdataweb.github.io/cafeteria-zoe/en/
 
 Hand-written HTML, CSS and vanilla JS with a small dependency-free build step. No framework, no runtime dependencies, no client-side rendering.
@@ -29,16 +29,17 @@ Lowercase ASCII, hyphen-separated, no edge hyphens — valid as an RFC 1123 DNS 
 │   ├── template.html          # single HTML template with {{i18n}} holes
 │   ├── place.json             # business data (edit here)
 │   └── i18n/
-│       ├── es.json            # Spanish (default)
-│       ├── ca.json            # Catalan
+│       ├── ca.json            # Catalan (default)
+│       ├── es.json            # Spanish
 │       └── en.json            # English
-├── index.html                 # GENERATED — Spanish
-├── ca/index.html              # GENERATED — Catalan
+├── index.html                 # GENERATED — Catalan (default)
+├── es/index.html              # GENERATED — Spanish
+├── ca/index.html              # GENERATED — redirect to /
 ├── en/index.html              # GENERATED — English
 ├── assets/
 │   ├── css/styles.css
 │   ├── js/app.js              # behaviour only; content is in the HTML
-│   └── photos/                # SVG artwork, og.png, touch icon
+│   └── photos/                # hero photo, SVG artwork, og.png, touch icon
 ├── scripts/
 │   ├── build.mjs              # renders every locale
 │   ├── make-icons.mjs         # og.png + apple-touch-icon.png

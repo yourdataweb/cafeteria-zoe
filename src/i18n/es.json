@@ -3,14 +3,12 @@
   "htmlLang": "es-ES",
   "ogLocale": "es_ES",
   "dir": "ltr",
-
   "meta": {
     "title": "Cafetería zoe — Café de barrio en la Rambla de Sant Jordi, Vilanova i la Geltrú",
     "description": "Cafetería zoe, en la Rambla de Sant Jordi de Vilanova i la Geltrú. Café bien hecho, pan de semillas, aire acondicionado y un trato cercano. 5,0 sobre 5 en Google.",
     "ogTitle": "Cafetería zoe — Café de barrio en Vilanova i la Geltrú",
     "ogDescription": "Café bien hecho, pan de semillas y un local fresco y tranquilo en la Rambla de Sant Jordi. 5,0 sobre 5 en Google."
   },
-
   "a11y": {
     "skip": "Ir al contenido",
     "home": "Cafetería zoe — inicio",
@@ -28,24 +26,29 @@
     "posterAlt": "Ilustración del interior de Cafetería zoe, con tazas de café y mesas junto a la ventana",
     "newWindow": "se abre en una pestaña nueva"
   },
-
   "brand": {
     "sub": "Cafetería · Vilanova i la Geltrú"
   },
-
   "nav": {
     "about": "La casa",
     "kitchen": "La carta",
     "reviews": "Opiniones",
     "visit": "Visítanos"
   },
-
   "langSwitch": {
-    "es": { "short": "ES", "aria": "Ver esta página en español" },
-    "ca": { "short": "CA", "aria": "Veure aquesta pàgina en català" },
-    "en": { "short": "EN", "aria": "View this page in English" }
+    "es": {
+      "short": "ES",
+      "aria": "Ver esta página en español"
+    },
+    "ca": {
+      "short": "CA",
+      "aria": "Veure aquesta pàgina en català"
+    },
+    "en": {
+      "short": "EN",
+      "aria": "View this page in English"
+    }
   },
-
   "hero": {
     "title": "Un buen café,<br>sin complicaciones.",
     "lede": "Una cafetería pequeña y cuidada en la Rambla de Sant Jordi. Café hecho al momento — caliente o templado, como lo prefieras —, pan de semillas para desayunar y un local fresco, luminoso y con música a un volumen que deja hablar.",
@@ -55,7 +58,6 @@
     "statReviews": "reseñas en Google",
     "statWhere": "Vilanova i la Geltrú"
   },
-
   "about": {
     "eyebrow": "La casa",
     "title": "Pequeña, luminosa<br>y con el aire a punto.",
@@ -67,13 +69,11 @@
     "factCuisine": "Qué se sirve",
     "cuisineValue": "Café, desayunos y bebidas"
   },
-
   "kitchen": {
     "eyebrow": "La carta",
     "title": "Lo que se pide aquí",
     "lede": "Sin carta larga. Estas son las cosas que más aparecen cuando la gente cuenta lo que ha tomado."
   },
-
   "capabilities": {
     "serviceOptions": "Servicio",
     "foodAndDrink": "Comida y bebida",
@@ -115,7 +115,6 @@
       "Cash only": "Solo efectivo"
     }
   },
-
   "reviews": {
     "eyebrow": "Lo que dicen",
     "title": "Quienes ya han pasado por aquí",
@@ -125,7 +124,6 @@
     "write": "Escribir una reseña",
     "originalIn": "Original en {lang}"
   },
-
   "visit": {
     "eyebrow": "Visítanos",
     "title": "En la Rambla de Sant Jordi",
@@ -138,18 +136,15 @@
     "openMap": "Abrir en Google Maps",
     "note": "Está en pleno centro, a un paso de la rambla. Si vienes en coche, busca aparcamiento en las calles del alrededor."
   },
-
   "footer": {
     "writeReview": "Escribir una reseña",
     "rights": "Todos los derechos reservados.",
     "dataNote": "Datos de Google Maps, actualizados a {date}.",
     "credit": "Las reseñas pertenecen a sus autores."
   },
-
   "jsonLd": {
     "cuisine": "Coffee, Breakfast"
   },
-
   "cookie": {
     "aria": "Aviso de cookies",
     "text": "Usamos almacenamiento técnico básico para recordar tu idioma y tu elección. El mapa de Google que ves más abajo puede instalar sus propias cookies.",
@@ -159,10 +154,13 @@
     "mapGate": "El mapa de Google puede instalar cookies. Acepta el aviso para cargarlo.",
     "mapLoad": "Cargar el mapa"
   },
-
   "languageNames": {
     "es": "español",
     "ca": "catalán",
     "en": "inglés"
+  },
+  "photo": {
+    "credit": "Foto:",
+    "alt": "foto de la cafetería"
   }
 }
