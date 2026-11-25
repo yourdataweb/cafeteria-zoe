@@ -111,11 +111,26 @@ touch targets and WCAG contrast.
 node scripts/screenshot.mjs
 ```
 
-Renders the top of the page at tablet width (768 px) and writes
-`assets/photos/handover-tablet.png`: the page with an overlay carrying a QR code
-pointing at the live URL, bottom-right, and the caption *"Ja tens pàgina web:
-https://yourdataweb.github.io/cafeteria-zoe/"* alongside it. Used for handing
-the site over to the business owner.
+Produces three handover images plus a print sheet:
+
+| File | Size | Use |
+|---|---|---|
+| `handover-tablet.png` | 1536×2048 px (768×1024 CSS @2x) | screens, chat, sharing |
+| `handover-a4-quarter.png` | 1240×1754 px = 105×148.5 mm @300 dpi | one quarter of an A4 sheet |
+| `handover-a4-sheet.png` | 2480×3508 px (A4 @300 dpi) | four copies in a 2×2 grid with dashed cut marks |
+| `handover-a4-sheet.pdf` | A4, vector page box | printing at 100 % scale |
+
+Each image carries the page top with an overlay: a QR code pointing at the
+live URL, bottom-right, and the caption *"Ja tens pàgina web:
+https://yourdataweb.github.io/cafeteria-zoe/"* alongside it.
+
+The quarter and the sheet render the page at 820 CSS px so the printed card
+shows the tablet layout (nav bar visible) rather than the phone layout the site
+switches to at 780 px and below. The device pixel ratio is derived from the
+target width, so the output lands on the exact print size without resampling.
+
+For printing, prefer the PDF: set the printer to **100 % / actual size**, not
+"fit to page", or the four cards will not measure 105 × 148.5 mm.
 
 ## Deploy
 
