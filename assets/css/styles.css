@@ -901,6 +901,8 @@ h3 { font-size: clamp(1.1rem, 1rem + .5vw, 1.35rem); }
 /* Returning visitors: the inline head script sets this class before first paint. */
 html.js-consent .cookie-banner { display: none; }
 html.js-consent .map-gate { display: none; }
+/* A returning visitor who refused: the banner stays away, the map keeps its button. */
+html.js-decided .cookie-banner { display: none; }
 .cookie-inner {
   max-width: var(--wrap);
   margin-inline: auto;

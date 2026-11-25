@@ -82,13 +82,16 @@
     const detail = $('#cookie-detail');
     const mapLoad = $('#map-load');
 
-    const accepted = readConsent() === 'accepted';
+    const stored = readConsent();
+    const accepted = stored === 'accepted';
+    const decided = accepted || stored === 'essential';
 
     if (accepted) {
       if (banner) banner.hidden = true;
       loadMap();
     } else {
-      if (banner) banner.hidden = false;
+      // A refusal is a decision: no banner, and the map stays behind its own button.
+      if (banner) banner.hidden = decided;
       const gate = $('#map-gate');
       if (gate) gate.hidden = false;
     }
@@ -96,14 +99,28 @@
     if (accept && banner) {
       accept.addEventListener('click', () => {
         writeConsent('accepted');
+        // Analytics and the map share one decision, so the visitor is asked once.
+        if (window.__analyticsConsent) window.__analyticsConsent(true);
         banner.hidden = true;
         loadMap();
+      });
+    }
+
+    const reject = $('#cookie-reject');
+    if (reject && banner) {
+      reject.addEventListener('click', () => {
+        writeConsent('essential');
+        if (window.__analyticsConsent) window.__analyticsConsent(false);
+        banner.hidden = true;
+        const gate = $('#map-gate');
+        if (gate) gate.hidden = false;
       });
     }
 
     if (mapLoad) {
       mapLoad.addEventListener('click', () => {
         writeConsent('accepted');
+        if (window.__analyticsConsent) window.__analyticsConsent(true);
         if (banner) banner.hidden = true;
         loadMap();
       });

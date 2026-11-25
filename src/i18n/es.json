@@ -147,12 +147,13 @@
   },
   "cookie": {
     "aria": "Aviso de cookies",
-    "text": "Usamos almacenamiento técnico básico para recordar tu idioma y tu elección. El mapa de Google que ves más abajo puede instalar sus propias cookies.",
+    "text": "Usamos almacenamiento técnico para recordar tu idioma y tu elección. Si aceptas, además medimos las visitas con Google Analytics. El mapa de Google puede instalar sus propias cookies.",
     "accept": "Aceptar",
     "more": "Más información",
-    "moreText": "Este sitio no usa cookies publicitarias ni de seguimiento. Solo guarda en tu navegador tu idioma y que has aceptado este aviso. El mapa embebido es un servicio de Google y se rige por su propia política.",
+    "moreText": "Con «Aceptar» activamos Google Analytics (G-71LT2Q093H) para saber cuántas personas visitan el sitio y qué páginas miran; Google trata esos datos según su política. Con «Solo lo esencial» no cargamos ningún script de Google ni guardamos cookies de seguimiento. En ambos casos guardamos en tu navegador solo tu idioma y esta elección. El mapa embebido es un servicio de Google y solo se carga si lo aceptas.",
     "mapGate": "El mapa de Google puede instalar cookies. Acepta el aviso para cargarlo.",
-    "mapLoad": "Cargar el mapa"
+    "mapLoad": "Cargar el mapa",
+    "reject": "Solo lo esencial"
   },
   "languageNames": {
     "es": "español",

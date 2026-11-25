@@ -147,12 +147,13 @@
   },
   "cookie": {
     "aria": "Avís de galetes",
-    "text": "Fem servir emmagatzematge tècnic bàsic per recordar el teu idioma i la teva elecció. El mapa de Google que veus més avall pot instal·lar les seves pròpies galetes.",
+    "text": "Fem servir emmagatzematge tècnic per recordar el teu idioma i la teva elecció. Si acceptes, també mesurem les visites amb Google Analytics. El mapa de Google pot instal·lar les seves pròpies galetes.",
     "accept": "Acceptar",
     "more": "Més informació",
-    "moreText": "Aquest lloc no fa servir galetes publicitàries ni de seguiment. Només desa al teu navegador el teu idioma i que has acceptat aquest avís. El mapa incrustat és un servei de Google i es regeix per la seva pròpia política.",
+    "moreText": "Amb «Acceptar» activem Google Analytics (G-71LT2Q093H) per saber quantes persones visiten el lloc i quines pàgines miren; les dades es tracten per Google segons la seva política. Amb «Només l'essencial» no carreguem cap script de Google ni desem cap galeta de seguiment. En tots dos casos desem al teu navegador només el teu idioma i aquesta elecció. El mapa incrustat és un servei de Google i només es carrega si l'acceptes.",
     "mapGate": "El mapa de Google pot instal·lar galetes. Accepta l'avís per carregar-lo.",
-    "mapLoad": "Carregar el mapa"
+    "mapLoad": "Carregar el mapa",
+    "reject": "Només l'essencial"
   },
   "languageNames": {
     "es": "castellà",

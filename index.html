@@ -14,6 +14,55 @@
 <link rel="alternate" hreflang="en-GB" href="https://yourdataweb.github.io/cafeteria-zoe/en/">
 <link rel="alternate" hreflang="x-default" href="https://yourdataweb.github.io/cafeteria-zoe/">
 
+<!-- Google Analytics 4, consent-gated: nothing is fetched from Google until the
+     visitor accepts, and storage stays denied by default until then. -->
+<script>
+  (function () {
+    var ID = 'G-71LT2Q093H';
+    var KEY = 'cookie-consent-v1';
+    var accepted = false;
+    try { accepted = localStorage.getItem(KEY) === 'accepted'; } catch (e) {}
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    gtag('js', new Date());
+
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied'
+    });
+
+    function load() {
+      if (window.__gaLoaded) return;
+      window.__gaLoaded = true;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ID;
+      document.head.appendChild(s);
+      gtag('config', ID);
+    }
+
+    function grant() {
+      load();
+      gtag('consent', 'update', {
+        ad_storage: 'granted',
+        ad_user_data: 'granted',
+        ad_personalization: 'granted',
+        analytics_storage: 'granted'
+      });
+    }
+
+    window.__analyticsConsent = function (isAccepted) {
+      try { localStorage.setItem(KEY, isAccepted ? 'accepted' : 'essential'); } catch (e) {}
+      if (isAccepted) grant();
+    };
+
+    if (accepted) grant();
+  })();
+</script>
+
 <meta property="og:type" content="business.business">
 <meta property="og:site_name" content="Cafetería zoe">
 <meta property="og:title" content="Cafeteria zoe — Cafè de barri a Vilanova i la Geltrú">
@@ -41,11 +90,12 @@
 <link rel="stylesheet" href="./assets/css/styles.css">
 
 <script>
-  /* Applied before first paint so returning visitors never see the notice flash. */
+  /* Applied before first paint so returning visitors never see the notice flash.
+     "essential" (a refusal) also counts as decided: the banner stays away. */
   try {
-    if (localStorage.getItem('cookie-consent-v1') === 'accepted') {
-      document.documentElement.classList.add('js-consent');
-    }
+    var choice = localStorage.getItem('cookie-consent-v1');
+    if (choice === 'accepted') document.documentElement.classList.add('js-consent');
+    else if (choice === 'essential') document.documentElement.classList.add('js-decided');
   } catch (e) { /* storage blocked */ }
 </script>
 <script type="application/ld+json">{
@@ -448,12 +498,13 @@
 
 <div class="cookie-banner" id="cookie-banner" role="region" aria-label="Avís de galetes">
   <div class="cookie-inner">
-    <p class="cookie-text">Fem servir emmagatzematge tècnic bàsic per recordar el teu idioma i la teva elecció. El mapa de Google que veus més avall pot instal·lar les seves pròpies galetes.</p>
+    <p class="cookie-text">Fem servir emmagatzematge tècnic per recordar el teu idioma i la teva elecció. Si acceptes, també mesurem les visites amb Google Analytics. El mapa de Google pot instal·lar les seves pròpies galetes.</p>
     <div class="cookie-actions">
       <button class="cookie-btn cookie-btn--primary" type="button" id="cookie-accept">Acceptar</button>
+      <button class="cookie-btn cookie-btn--link" type="button" id="cookie-reject">Només l&#39;essencial</button>
       <button class="cookie-btn cookie-btn--link" type="button" id="cookie-more" aria-expanded="false" aria-controls="cookie-detail">Més informació</button>
     </div>
-    <p class="cookie-detail" id="cookie-detail" hidden>Aquest lloc no fa servir galetes publicitàries ni de seguiment. Només desa al teu navegador el teu idioma i que has acceptat aquest avís. El mapa incrustat és un servei de Google i es regeix per la seva pròpia política.</p>
+    <p class="cookie-detail" id="cookie-detail" hidden>Amb «Acceptar» activem Google Analytics (G-71LT2Q093H) per saber quantes persones visiten el lloc i quines pàgines miren; les dades es tracten per Google segons la seva política. Amb «Només l&#39;essencial» no carreguem cap script de Google ni desem cap galeta de seguiment. En tots dos casos desem al teu navegador només el teu idioma i aquesta elecció. El mapa incrustat és un servei de Google i només es carrega si l&#39;acceptes.</p>
   </div>
 </div>
 

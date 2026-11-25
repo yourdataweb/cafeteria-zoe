@@ -74,13 +74,20 @@ ever shipped.
 
 ## Cookies and consent
 
-The site sets no advertising or tracking cookies. It stores one
-`localStorage` key (`cookie-consent-v1`) recording that the visitor accepted the
-notice. The Google Maps iframe is gated behind that consent: the embed URL sits
-in `data-src` and is only promoted to `src` once the visitor accepts, so no
-third-party request is made before consent. A small inline script in `<head>`
-applies the accepted state before first paint, so returning visitors never see
-the notice flash.
+Nothing is requested from Google until the visitor accepts. Consent gates two
+things, from one stored decision in `localStorage` (`cookie-consent-v1`):
+
+- **Analytics** — Google Analytics 4 (`G-71LT2Q093H`) is loaded through `gtag.js`
+  only after acceptance. Before that, no `gtag.js` request is made and
+  `analytics_storage` is held at `denied`, so no `_ga` cookie can be written.
+  The banner's reject button stores `essential`, which leaves analytics off
+  permanently for that visitor.
+- **The map** — the Google Maps embed URL sits in `data-src` and is only
+  promoted to `src` once the visitor accepts, so no third-party request is made
+  before consent.
+
+A small inline script in `<head>` applies the stored decision before first paint,
+so returning visitors never see the notice flash.
 
 The map is reachable without consent through the "Google Maps" link, which is a
 plain navigation, not an embed.

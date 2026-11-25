@@ -147,12 +147,13 @@
   },
   "cookie": {
     "aria": "Cookie notice",
-    "text": "We use basic technical storage to remember your language and your choice. The Google map below may set its own cookies.",
+    "text": "We use technical storage to remember your language and your choice. If you accept, we also measure visits with Google Analytics. The Google map may set its own cookies.",
     "accept": "Accept",
     "more": "More information",
-    "moreText": "This site uses no advertising or tracking cookies. It only stores your language and the fact that you accepted this notice in your browser. The embedded map is a Google service and follows its own policy.",
+    "moreText": "Accepting enables Google Analytics (G-71LT2Q093H) so we can see how many people visit the site and which pages they read; Google processes that data under its own policy. Choosing essentials only means no Google script is loaded and no tracking cookies are stored. Either way, we only store your language and this choice in your browser. The embedded map is a Google service and loads only if you accept.",
     "mapGate": "The Google map may set cookies. Accept the notice to load it.",
-    "mapLoad": "Load the map"
+    "mapLoad": "Load the map",
+    "reject": "Essentials only"
   },
   "languageNames": {
     "es": "Spanish",

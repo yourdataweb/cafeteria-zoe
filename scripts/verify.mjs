@@ -242,6 +242,66 @@ console.log('after reload:', JSON.stringify(afterReload));
 expect(afterReload.banner === false, 'consent: notice must stay hidden after reload');
 expect((afterReload.src || '').includes('output=embed'), 'consent: map must stay loaded after reload');
 
+/* ---------- analytics gate: no Google request before consent ---------- */
+console.log('\n===== analytics consent =====');
+const GA_RE = /googletagmanager\.com|google-analytics\.com|analytics\.google\.com/;
+
+{
+  // fresh context: a stored consent from the map test above would load the tag
+  const ctx = await browser.createBrowserContext();
+  const p = await ctx.newPage();
+  const gaReqs = [];
+  p.on('request', (r) => { if (GA_RE.test(r.url())) gaReqs.push(r.url().split('?')[0]); });
+  await p.setViewport({ width: 1440, height: 900 });
+  await p.goto(BASE, { waitUntil: 'networkidle2' });
+  await p.evaluate(() => { try { localStorage.removeItem('cookie-consent-v1'); } catch (e) {} });
+  await p.reload({ waitUntil: 'networkidle2' });
+  await new Promise((r) => setTimeout(r, 1500));
+
+  const pre = { reqs: gaReqs.length, cookies: (await p.cookies()).filter((c) => /^_ga/.test(c.name)).length };
+  console.log('before consent:', JSON.stringify(pre));
+  expect(pre.reqs === 0, `analytics: ${pre.reqs} Google request(s) before consent`);
+  expect(pre.cookies === 0, `analytics: ${pre.cookies} _ga cookie(s) before consent`);
+
+  await p.click('#cookie-accept');
+  await new Promise((r) => setTimeout(r, 3500));
+  const post = {
+    reqs: gaReqs.length,
+    collect: gaReqs.some((u) => /collect/.test(u)),
+    cookies: (await p.cookies()).filter((c) => /^_ga/.test(c.name)).map((c) => c.name)
+  };
+  console.log('after accept:', JSON.stringify(post));
+  expect(post.collect, 'analytics: no collect request after accepting');
+  expect(post.cookies.length > 0, 'analytics: no _ga cookie after accepting');
+  await ctx.close();
+}
+
+{
+  // refusal must load nothing, and must not show the banner again on return
+  const ctx = await browser.createBrowserContext();
+  const p = await ctx.newPage();
+  const gaReqs = [];
+  p.on('request', (r) => { if (GA_RE.test(r.url())) gaReqs.push(1); });
+  await p.goto(BASE, { waitUntil: 'networkidle2' });
+  await p.click('#cookie-reject');
+  await new Promise((r) => setTimeout(r, 2500));
+  const stored = await p.evaluate(() => localStorage.getItem('cookie-consent-v1'));
+  console.log('after reject:', JSON.stringify({ reqs: gaReqs.length, stored }));
+  expect(gaReqs.length === 0, `analytics: ${gaReqs.length} Google request(s) after refusing`);
+  expect(stored === 'essential', `analytics: refusal should be stored, got ${stored}`);
+
+  await p.reload({ waitUntil: 'networkidle2' });
+  await new Promise((r) => setTimeout(r, 1200));
+  const onReturn = await p.evaluate(() => ({
+    banner: getComputedStyle(document.querySelector('#cookie-banner')).display !== 'none',
+    reqs: 0
+  }));
+  console.log('returning after refusal, banner visible:', onReturn.banner);
+  expect(onReturn.banner === false, 'analytics: banner must stay hidden after an earlier refusal');
+  expect(gaReqs.length === 0, 'analytics: a refusal must not start loading analytics later');
+  await ctx.close();
+}
+
 // titles and h1s must differ per locale (real localized HTML, not a JS swap)
 const titles = new Set(results.map((r) => r.title));
 const h1s = new Set(results.map((r) => r.h1));

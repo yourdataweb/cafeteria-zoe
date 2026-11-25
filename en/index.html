@@ -14,6 +14,55 @@
 <link rel="alternate" hreflang="en-GB" href="https://yourdataweb.github.io/cafeteria-zoe/en/">
 <link rel="alternate" hreflang="x-default" href="https://yourdataweb.github.io/cafeteria-zoe/">
 
+<!-- Google Analytics 4, consent-gated: nothing is fetched from Google until the
+     visitor accepts, and storage stays denied by default until then. -->
+<script>
+  (function () {
+    var ID = 'G-71LT2Q093H';
+    var KEY = 'cookie-consent-v1';
+    var accepted = false;
+    try { accepted = localStorage.getItem(KEY) === 'accepted'; } catch (e) {}
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    gtag('js', new Date());
+
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied'
+    });
+
+    function load() {
+      if (window.__gaLoaded) return;
+      window.__gaLoaded = true;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ID;
+      document.head.appendChild(s);
+      gtag('config', ID);
+    }
+
+    function grant() {
+      load();
+      gtag('consent', 'update', {
+        ad_storage: 'granted',
+        ad_user_data: 'granted',
+        ad_personalization: 'granted',
+        analytics_storage: 'granted'
+      });
+    }
+
+    window.__analyticsConsent = function (isAccepted) {
+      try { localStorage.setItem(KEY, isAccepted ? 'accepted' : 'essential'); } catch (e) {}
+      if (isAccepted) grant();
+    };
+
+    if (accepted) grant();
+  })();
+</script>
+
 <meta property="og:type" content="business.business">
 <meta property="og:site_name" content="Cafetería zoe">
 <meta property="og:title" content="Cafetería zoe — Neighbourhood coffee shop in Vilanova i la Geltrú">
@@ -41,11 +90,12 @@
 <link rel="stylesheet" href="../assets/css/styles.css">
 
 <script>
-  /* Applied before first paint so returning visitors never see the notice flash. */
+  /* Applied before first paint so returning visitors never see the notice flash.
+     "essential" (a refusal) also counts as decided: the banner stays away. */
   try {
-    if (localStorage.getItem('cookie-consent-v1') === 'accepted') {
-      document.documentElement.classList.add('js-consent');
-    }
+    var choice = localStorage.getItem('cookie-consent-v1');
+    if (choice === 'accepted') document.documentElement.classList.add('js-consent');
+    else if (choice === 'essential') document.documentElement.classList.add('js-decided');
   } catch (e) { /* storage blocked */ }
 </script>
 <script type="application/ld+json">{
@@ -448,12 +498,13 @@
 
 <div class="cookie-banner" id="cookie-banner" role="region" aria-label="Cookie notice">
   <div class="cookie-inner">
-    <p class="cookie-text">We use basic technical storage to remember your language and your choice. The Google map below may set its own cookies.</p>
+    <p class="cookie-text">We use technical storage to remember your language and your choice. If you accept, we also measure visits with Google Analytics. The Google map may set its own cookies.</p>
     <div class="cookie-actions">
       <button class="cookie-btn cookie-btn--primary" type="button" id="cookie-accept">Accept</button>
+      <button class="cookie-btn cookie-btn--link" type="button" id="cookie-reject">Essentials only</button>
       <button class="cookie-btn cookie-btn--link" type="button" id="cookie-more" aria-expanded="false" aria-controls="cookie-detail">More information</button>
     </div>
-    <p class="cookie-detail" id="cookie-detail" hidden>This site uses no advertising or tracking cookies. It only stores your language and the fact that you accepted this notice in your browser. The embedded map is a Google service and follows its own policy.</p>
+    <p class="cookie-detail" id="cookie-detail" hidden>Accepting enables Google Analytics (G-71LT2Q093H) so we can see how many people visit the site and which pages they read; Google processes that data under its own policy. Choosing essentials only means no Google script is loaded and no tracking cookies are stored. Either way, we only store your language and this choice in your browser. The embedded map is a Google service and loads only if you accept.</p>
   </div>
 </div>
 
