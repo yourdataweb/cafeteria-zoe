@@ -45,6 +45,21 @@ jobs:
             aws s3api "$q" --bucket "$S3_BUCKET" 2>&1 | head -20 || true
           done
 
+      - name: Can an object be made public from the deploy role?
+        run: |
+          set -uo pipefail
+          echo "probe" > /tmp/probe.txt
+          K="$S3_PREFIX/_probe.txt"
+          echo "--- put-object with --acl public-read ---"
+          aws s3 cp /tmp/probe.txt "s3://$S3_BUCKET/$K" --acl public-read 2>&1 | head -10 || true
+          echo "--- is it publicly readable? ---"
+          curl -s -o /dev/null -w "public GET: %{http_code}\n" -m 15 \
+            "https://dr-static-websites.s3.eu-south-2.amazonaws.com/$K" || true
+          curl -s -o /dev/null -w "via domain: %{http_code}\n" -m 15 \
+            "https://vilanovailageltru.info/${K#vilanovailageltru.info/}" || true
+          echo "--- cleanup ---"
+          aws s3 rm "s3://$S3_BUCKET/$K" --only-show-errors || true
+
       - name: Public URL probe
         run: |
           for u in "https://vilanovailageltru.info/cafeteria-zoe/index.html" \
