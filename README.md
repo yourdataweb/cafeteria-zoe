@@ -1,155 +1,82 @@
-# Cafetería zoe
+# Cafetería zoe — website
 
-Trilingual static website for **Cafetería zoe**, a coffee shop on Rambla de Sant Jordi, Vilanova i la Geltrú (Barcelona).
+Static site for **Cafetería zoe**, a coffee shop at Rambla de Sant Jordi, Vilanova i la Geltrú.
 
-**Live (Català, default):** https://cafeteria-zoe.vilanovailageltru.info/
-**Español:** https://cafeteria-zoe.vilanovailageltru.info/es/
-**English:** https://cafeteria-zoe.vilanovailageltru.info/en/
+Three languages, server-rendered HTML per locale, plain CSS and one small
+progressive-enhancement script. No framework, no runtime dependencies.
 
-Hand-written HTML, CSS and vanilla JS with a small dependency-free build step. No framework, no runtime dependencies, no client-side rendering.
+## Live site
 
----
+- **Catalan (default):** <https://cafeteria-zoe.vilanovailageltru.info/>
+- **Spanish:** <https://cafeteria-zoe.vilanovailageltru.info/es/>
+- **English:** <https://cafeteria-zoe.vilanovailageltru.info/en/>
 
-## Project identity
+## Page structure
 
-| Field | Value |
-|---|---|
-| Code name | `cafeteria-zoe` |
-| Domain label | `cafeteria-zoe` |
-| Repository | `cafeteria-zoe` |
-| S3 prefix | `cafeteria-zoe/` |
+Top bar with the address and language switch, sticky header with the shop mark.
+A hero with the coffee shop photo and a call-to-action, then the kitchen (coffee, seeded bread,
+desserts), what the shop offers, reviews, and contact with phone and the consent-gated map.
 
-Lowercase ASCII, hyphen-separated, no edge hyphens — valid as an RFC 1123 DNS label (≤63 chars), a GitHub repository name and an S3 bucket prefix.
-
-## Structure
+## Repo layout
 
 ```
-.
-├── src/
-│   ├── template.html          # single HTML template with {{i18n}} holes
-│   ├── place.json             # business data (edit here)
-│   └── i18n/
-│       ├── ca.json            # Catalan (default)
-│       ├── es.json            # Spanish
-│       └── en.json            # English
-├── index.html                 # GENERATED — Catalan (default)
-├── es/index.html              # GENERATED — Spanish
-├── ca/index.html              # GENERATED — redirect to /
-├── en/index.html              # GENERATED — English
-├── assets/
-│   ├── css/styles.css
-│   ├── js/app.js              # behaviour only; content is in the HTML
-│   └── photos/                # hero photo, SVG artwork, og.png, touch icon
-├── scripts/
-│   ├── build.mjs              # renders every locale
-│   ├── make-icons.mjs         # og.png + apple-touch-icon.png
-│   ├── verify.mjs             # headless functional assertions
-│   └── audit-layout.mjs       # geometry, contrast, touch-target audit
-└── .github/workflows/pages.yml
+index.html                 Catalan (default locale)
+es/index.html              Spanish
+en/index.html              English
+ca/index.html              redirect to / (the default locale used to live here)
+src/template.html          the single template the build renders
+src/data.json              business data (address, phone, coordinates, rating)
+src/locales.json           locale list, which one is default, hreflang codes
+src/i18n/{ca,es,en}.json   all copy, per locale
+scripts/build.mjs          renders the locale pages + sitemap, robots, manifest
+scripts/assets.mjs         app icons and the Open Graph image
+scripts/card.mjs           handover card, 10.5 x 14.5 cm @ 300 dpi
+scripts/verify.mjs         headless checks against the built output
+assets/css/styles.css      all styles, responsive from 320 px up
+assets/js/main.js          navigation, reveal, cookie consent, lazy map
+assets/fonts/              self-hosted Fraunces and Inter (woff2 subsets)
+assets/img/                mark, icons, hero photo, OG image
+assets/photos/handover.png handover card with a QR to the live site
+.github/workflows/         deploy to S3 on push to main
 ```
 
 ## Build
 
-```bash
-node scripts/build.mjs
-```
-
-Emits `index.html`, `ca/index.html`, `en/index.html`, `sitemap.xml`,
-`manifest.webmanifest` and `robots.txt`. The build **fails** if any `{{hole}}`
-or `<!--MARKER-->` survives into the output.
-
-Every locale is real server-rendered HTML — not a JS language swap. Each has its
-own `<html lang>`, canonical URL, `og:locale`, and a reciprocal `hreflang` set
-for all three languages plus `x-default`.
-
-## Content model
-
-All business content lives in `src/place.json`; UI strings live in
-`src/i18n/{es,ca,en}.json`. The template only holds markup and markers, so
-changing a fact or a sentence never requires touching HTML.
-
-Optional fields degrade cleanly: if a value is absent, the corresponding block
-is not rendered rather than being emitted empty. No placeholder or dead link is
-ever shipped.
-
-## Cookies and consent
-
-Nothing is requested from Google until the visitor accepts. Consent gates two
-things, from one stored decision in `localStorage` (`cookie-consent-v1`):
-
-- **Analytics** — Google Analytics 4 (`G-71LT2Q093H`) is loaded through `gtag.js`
-  only after acceptance. Before that, no `gtag.js` request is made and
-  `analytics_storage` is held at `denied`, so no `_ga` cookie can be written.
-  The banner's reject button stores `essential`, which leaves analytics off
-  permanently for that visitor.
-- **The map** — the Google Maps embed URL sits in `data-src` and is only
-  promoted to `src` once the visitor accepts, so no third-party request is made
-  before consent.
-
-A small inline script in `<head>` applies the stored decision before first paint,
-so returning visitors never see the notice flash.
-
-The map is reachable without consent through the "Google Maps" link, which is a
-plain navigation, not an embed.
-
-## Verification
+Requires Node 20+ and `puppeteer` for the asset scripts.
 
 ```bash
-node scripts/build.mjs
-python3 -m http.server 8100 &
-BASE=http://127.0.0.1:8100/ node scripts/verify.mjs
-BASE=http://127.0.0.1:8100/ node scripts/audit-layout.mjs
+node scripts/build.mjs     # render the locale pages
+node scripts/assets.mjs    # regenerate icons and og-image.jpg
+node scripts/card.mjs      # regenerate the handover card
+node scripts/verify.mjs    # headless verification of the built output
 ```
 
-`verify.mjs` asserts, per locale: exactly one `h1`, no heading-level jumps,
-canonical + 4 `hreflang` links, one active language, testimonials present,
-**zero** `tel:` links, **zero** `wa.me` links, no floating WhatsApp button, the
-rating badge for a 5.0 rating, the review count hidden under 50, parseable
-`CafeOrCoffeeShop` JSON-LD with **no invented telephone**, an `output=embed`
-map, no published hours or prices, and no horizontal overflow.
+`build.mjs` fails on an unresolved template placeholder, an empty `href`/`src`, invalid
+JSON-LD, or a feature icon that has no entry in `scripts/icons.json`.
 
-`audit-layout.mjs` measures 3 locales × 5 viewports for overflow, clipped text,
-touch targets and WCAG contrast.
+## Editing content
 
-## Screenshot for the owner
-
-![Handover screenshot: page top with QR overlay](assets/photos/handover.png)
-
-```bash
-node scripts/screenshot.mjs
-```
-
-Produces `assets/photos/handover.png`: **1240 × 1713 px at 300 dpi**, i.e.
-**10.5 × 14.5 cm** printed. The resolution is written into the PNG (`pHYs`
-chunk), so image viewers and print dialogs report the physical size instead of
-guessing 72 dpi.
-
-The image shows the page top with an overlay: a QR code pointing at the live
-URL, bottom-right, and the caption *"Ja tens pàgina web:
-https://cafeteria-zoe.vilanovailageltru.info/"* beside it.
-
-The page renders at 820 CSS px so the card shows the tablet layout (nav bar
-visible) rather than the phone layout the site switches to at 780 px and below.
-The device pixel ratio is derived from the target width, so the output lands on
-the exact print size without resampling.
-
-When printing, use **100 % / actual size**, not "fit to page".
+Text lives in `src/i18n/*.json`; shared business facts live in `src/data.json`. Change those,
+run `node scripts/build.mjs`, commit the regenerated HTML. Do not hand-edit the generated
+`index.html` files — they are overwritten.
 
 ## Deploy
 
-Push to `main`; the workflow builds and deploys. First-time setup:
-**Settings → Pages → Source: GitHub Actions**.
+Pushing to `main` runs `.github/workflows/deploy-aws.yml`: it builds the site, authenticates
+to AWS with OIDC (no stored keys) and uploads to
+`s3://dr-static-websites/vilanovailageltru.info/cafeteria-zoe/`. The subdomain is served from the bucket's CDN, so a
+deploy is live within a few minutes.
 
-## Accessibility and SEO
+## Technical notes
 
-- Semantic landmarks, one `h1` per page, no heading-level jumps
-- Skip link, visible focus rings, ≥44 px touch targets
-- Colour pairs checked against WCAG AA in `audit-layout.mjs`
-- `CafeOrCoffeeShop` JSON-LD per locale, canonical + `hreflang` set, Open Graph and
-  Twitter cards, `sitemap.xml`, `robots.txt`
-- Every `<img>` has an `alt`; decorative ones use `alt=""`
-
-## Third-party content
-
-Review text and reviewer avatars belong to their authors. The map embed is
-served by Google Maps.
+- **SEO** — per-locale `<title>`, description, canonical, reciprocal `hreflang` including
+  `x-default`, Open Graph and Twitter cards, `sitemap.xml` with alternates, `robots.txt`, and
+  `CafeOrCoffeeShop` structured data. Every absolute URL derives from the site's own domain.
+- **Accessibility** — one `h1` per page, skip link, landmark elements, visible focus rings,
+  body text at or above 4.5:1 contrast, `aria-expanded` on the navigation toggle, Escape
+  closes the drawer, and content stays readable with JavaScript disabled.
+- **Performance** — self-hosted woff2 subsets preloaded, one CSS file, one deferred JS file,
+  no third-party requests until the visitor opts in.
+- **Privacy** — the cookie notice offers accept and reject. Nothing is fetched from Google —
+  analytics script or map iframe — until the visitor accepts; rejecting loads neither and is
+  remembered.
