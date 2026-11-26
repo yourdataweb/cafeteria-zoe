@@ -2,9 +2,9 @@
 
 Trilingual static website for **Cafetería zoe**, a coffee shop on Rambla de Sant Jordi, Vilanova i la Geltrú (Barcelona).
 
-**Live (Català, default):** https://yourdataweb.github.io/cafeteria-zoe/
-**Español:** https://yourdataweb.github.io/cafeteria-zoe/es/
-**English:** https://yourdataweb.github.io/cafeteria-zoe/en/
+**Live (Català, default):** https://cafeteria-zoe.vilanovailageltru.info/
+**Español:** https://cafeteria-zoe.vilanovailageltru.info/es/
+**English:** https://cafeteria-zoe.vilanovailageltru.info/en/
 
 Hand-written HTML, CSS and vanilla JS with a small dependency-free build step. No framework, no runtime dependencies, no client-side rendering.
 
@@ -126,7 +126,7 @@ guessing 72 dpi.
 
 The image shows the page top with an overlay: a QR code pointing at the live
 URL, bottom-right, and the caption *"Ja tens pàgina web:
-https://yourdataweb.github.io/cafeteria-zoe/"* beside it.
+https://cafeteria-zoe.vilanovailageltru.info/"* beside it.
 
 The page renders at 820 CSS px so the card shows the tablet layout (nav bar
 visible) rather than the phone layout the site switches to at 780 px and below.

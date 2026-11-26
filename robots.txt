@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://yourdataweb.github.io/cafeteria-zoe/sitemap.xml
+Sitemap: https://cafeteria-zoe.vilanovailageltru.info/sitemap.xml

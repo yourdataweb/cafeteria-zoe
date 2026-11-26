@@ -21,9 +21,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const SRC = join(ROOT, 'src');
 
+/* Canonical, sitemap and the handover QR all derive from where the site is
+   actually served: a per-site subdomain of the bucket's domain. Keep this in one
+   place, because a stale host here makes every locale advertise the wrong URL. */
 const CODE_NAME = 'cafeteria-zoe';
-const SITE = `https://yourdataweb.github.io/${CODE_NAME}`;
-const ORIGIN = 'https://yourdataweb.github.io';
+const SITE_DOMAIN = 'vilanovailageltru.info';
+const SITE_ORIGIN = `https://${CODE_NAME}.${SITE_DOMAIN}`;
+const SITE = SITE_ORIGIN;
+const ORIGIN = SITE_ORIGIN;
 
 const LOCALES = [
   { locale: 'ca', pathPrefix: '' },
@@ -441,7 +446,7 @@ function buildPage({ dict, place, template }) {
     dir: dict.dir,
     url,
     root,
-    siteBase: `${ORIGIN}/${CODE_NAME}/`,
+    siteBase: `${ORIGIN}/`,
     ogLocale: dict.ogLocale,
     jsonLd: buildJsonLd(place, dict, url),
     year: new Date().getFullYear(),

@@ -25,8 +25,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const PHOTOS = join(ROOT, 'assets', 'photos');
 
-const BASE = process.env.BASE || 'https://yourdataweb.github.io/cafeteria-zoe/';
-const SITE_URL = 'https://yourdataweb.github.io/cafeteria-zoe/';
+const BASE = process.env.BASE || 'https://cafeteria-zoe.vilanovailageltru.info/';
+const SITE_URL = 'https://cafeteria-zoe.vilanovailageltru.info/';
 
 /* ---------- target size ----------
    10.5 × 14.5 cm at 300 dpi.

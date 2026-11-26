@@ -148,10 +148,10 @@ async function inspect(url, label) {
   expect(data.hreflangs.length === 4, `${label}: expected 4 hreflang links, got ${data.hreflangs.length} (${data.hreflangs.join(' ')})`);
   // Each locale must point at its own real path under the current default.
   for (const { locale, path: p } of LOCALES) {
-    const want = `${HREFLANG[locale]}=https://yourdataweb.github.io/cafeteria-zoe/${p}`;
+    const want = `${HREFLANG[locale]}=https://cafeteria-zoe.vilanovailageltru.info/${p}`;
     expect(data.hreflangs.includes(want), `${label}: hreflang missing or wrong: ${want}`);
   }
-  expect(data.hreflangs.includes('x-default=https://yourdataweb.github.io/cafeteria-zoe/'),
+  expect(data.hreflangs.includes('x-default=https://cafeteria-zoe.vilanovailageltru.info/'),
     `${label}: x-default must point at the default locale`);
   expect(data.langOpts.length === 3, `${label}: expected 3 language options, got ${data.langOpts.length}`);
   expect(data.langOpts.filter((o) => o.active).length === 1, `${label}: exactly one language should be active`);
