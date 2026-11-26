@@ -247,31 +247,6 @@ h3 { font-size: clamp(1.1rem, 1rem + .5vw, 1.35rem); }
 .site-header.is-stuck .social-link { color: var(--ink-mute); }
 .site-header.is-stuck .social-link:hover { color: var(--wood-800); background: rgba(35, 21, 15, .07); }
 
-.lang-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: .1rem;
-  font-size: .76rem;
-  font-weight: 700;
-  letter-spacing: .05em;
-  padding: .3rem .1rem;
-}
-.lang-opt {
-  padding: .25rem .38rem;
-  border-radius: var(--radius-sm);
-  color: rgba(255, 255, 255, .64);
-  transition: color .2s ease, background-color .2s ease;
-}
-.lang-opt:hover { color: #fff; }
-.lang-opt.is-active {
-  color: #fff;
-  background: rgba(255, 255, 255, .18);
-}
-.lang-sep { color: rgba(255, 255, 255, .3); }
-.site-header.is-stuck .lang-opt { color: var(--ink-mute); }
-.site-header.is-stuck .lang-opt:hover { color: var(--wood-800); }
-.site-header.is-stuck .lang-opt.is-active { color: #fff; background: var(--wood-800); }
-.site-header.is-stuck .lang-sep { color: var(--cream-300); }
 
 /* mobile variants live inside the drawer */
 .social-bar--mobile { justify-content: flex-start; padding: .5rem .25rem 0; }
@@ -280,14 +255,6 @@ h3 { font-size: clamp(1.1rem, 1rem + .5vw, 1.35rem); }
   width: 40px; height: 40px;
 }
 .social-bar--mobile .social-link:hover { background: var(--cream-100); color: var(--wood-800); }
-.lang-switch--mobile {
-  padding: .9rem .25rem .2rem;
-  border-top: 1px solid var(--cream-200);
-  margin-top: .5rem;
-}
-.lang-switch--mobile .lang-opt { color: var(--ink-mute); }
-.lang-switch--mobile .lang-opt.is-active { background: var(--wood-800); color: #fff; }
-.lang-switch--mobile .lang-sep { color: var(--cream-300); }
 
 .nav { display: flex; align-items: center; gap: 2rem; }
 .nav a {
@@ -842,7 +809,6 @@ h3 { font-size: clamp(1.1rem, 1rem + .5vw, 1.35rem); }
    RESPONSIVE
    ========================================================================== */
 @media (max-width: 1040px) {
-  .header-tools .lang-switch { display: none; }
   .nav { gap: 1.4rem; }
 }
 
@@ -972,90 +938,4 @@ html.js-decided .cookie-banner { display: none; }
   .reviews { background: #fff; color: #000; }
   .reviews h2, .review blockquote { color: #000; }
   .review { border: 1px solid #ccc; }
-}
-
-/* ==========================================================================
-   Language switch — the one canonical toolbar used by every site.
-   Change only the four custom properties at the top; never re-implement it.
-
-   Why it is written this way:
-   - a fixed 20x13 box with overflow:hidden, so a flag can never bleed out of
-     its pill (the inner SVG has no width/height of its own);
-   - the code label is always present, which keeps every pill the same width and
-     stops the narrow flags-only variant from looking misaligned;
-   - the active pill uses its own background, never a border, so no 1px seam
-     appears between adjacent pills;
-   - height is fixed, so the toolbar aligns with the phone button beside it.
-   ========================================================================== */
-
-.langs {
-  --langs-bg: rgba(255,255,255,.10);
-  --langs-border: rgba(255,255,255,.28);
-  --langs-ink: rgba(255,255,255,.85);
-  --langs-active-bg: #f2ece1;
-  --langs-active-ink: #2a1a12;
-
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  height: 32px;
-  padding: 0 3px;
-  border: 1px solid var(--langs-border);
-  border-radius: 999px;
-  background: var(--langs-bg);
-  box-sizing: border-box;
-}
-
-.langs__link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  height: 26px;
-  padding: 0 9px;
-  border-radius: 999px;
-  text-decoration: none;
-  line-height: 1;
-  color: var(--langs-ink);
-  /* A hairline of the same colour as the background prevents the sub-pixel
-     seam some browsers draw between adjacent rounded pills. */
-  transition: background-color .15s ease, color .15s ease;
-}
-.langs__link:hover { background: rgba(0, 0, 0, .06); }
-.langs__link[aria-current="true"] {
-  background: var(--langs-active-bg);
-  color: var(--langs-active-ink);
-}
-.langs__link[aria-current="true"]:hover { background: var(--langs-active-bg); }
-
-/* The flag box is a hard size with clipping: an SVG with only a viewBox renders
-   at its intrinsic size and would otherwise overflow the pill. */
-.langs__flag {
-  display: block;
-  flex: none;
-  width: 20px;
-  height: 13px;
-  border-radius: 2px;
-  overflow: hidden;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, .12);
-}
-.langs__flag svg {
-  display: block;
-  width: 20px;
-  height: 13px;
-}
-
-.langs__code {
-  font-size: .72rem;
-  font-weight: 600;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-}
-
-/* On narrow screens the code alone is not enough to identify a language for a
-   screen reader, but the visible pill can drop to flag + code compactly. */
-@media (max-width: 420px) {
-  .langs { height: 30px; }
-  .langs__link { height: 24px; padding: 0 7px; gap: 5px; }
-  .langs__code { font-size: .68rem; }
 }
