@@ -1,0 +1,55 @@
+name: Diagnose S3 delivery
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: eu-south-2
+  S3_BUCKET: dr-static-websites
+  S3_PREFIX: vilanovailageltru.info/cafeteria-zoe
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to AWS
+        uses: aws-actions/configure-aws-credentials@45666896f5d8e0f10ae255413f3a4cdd03bdc8f5 # v6.3.1
+        with:
+          role-to-assume: arn:aws:iam::167823666738:role/github-static-websites-publisher
+          aws-region: ${{ env.AWS_REGION }}
+          mask-aws-account-id: true
+
+      - name: Who am I
+        run: aws sts get-caller-identity
+
+      - name: Object ACL and metadata
+        run: |
+          set -uo pipefail
+          K="$S3_PREFIX/index.html"
+          echo "--- head-object ---"
+          aws s3api head-object --bucket "$S3_BUCKET" --key "$K" || true
+          echo "--- get-object-acl ---"
+          aws s3api get-object-acl --bucket "$S3_BUCKET" --key "$K" || echo "acl: denied"
+          echo "--- list prefix ---"
+          aws s3api list-objects-v2 --bucket "$S3_BUCKET" --prefix "$S3_PREFIX/" --max-items 5 \
+            --query 'Contents[].{Key:Key,Size:Size}' --output table || true
+
+      - name: Bucket-level settings (expected to be denied for a scoped role)
+        run: |
+          for q in get-bucket-policy get-bucket-acl get-bucket-website get-public-access-block; do
+            echo "--- $q ---"
+            aws s3api "$q" --bucket "$S3_BUCKET" 2>&1 | head -20 || true
+          done
+
+      - name: Public URL probe
+        run: |
+          for u in "https://vilanovailageltru.info/cafeteria-zoe/index.html" \
+                   "https://vilanovailageltru.info/cafeteria-zoe/"; do
+            code=$(curl -s -o /tmp/out -w '%{http_code}' -m 20 "$u" || echo fail)
+            echo "$code  $u"
+            head -c 200 /tmp/out; echo
+          done
