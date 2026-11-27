@@ -1,0 +1,74 @@
+# Cafetería zoe
+
+> Cafeteria zoe, a la Rambla de Sant Jordi de Vilanova i la Geltrú. Cafè ben fet, pa de llavors, aire condicionat i un tracte proper. 5,0 sobre 5 a Google.
+
+Cafeteria · Vilanova i la Geltrú.
+
+Cafeteria zoe és a la Rambla de Sant Jordi, al centre de Vilanova i la Geltrú. És un local petit que es nota cuidat: ben il·luminat, amb música discreta i aire condicionat, una cosa que a l'estiu aquí s'agraeix de debò.
+La Zoe atén darrere la barra i s'aprèn com t'agrada el cafè. Si el vols calent de veritat, ho diu i el serveix calent de veritat; si el prefereixes tebi, també. És d'aquells llocs on un torna per costum més que per novetat.
+
+## El que es demana aquí
+
+Sense carta llarga. Aquestes són les coses que més surten quan la gent explica què ha pres.
+
+- **Cafè**: Calent o tebi, com ho demanis
+- **Cafè amb llet**: El que més demanen
+- **Pa de llavors**: Per esmorzar
+- **Cervesa**: Ben freda
+
+### Servei
+
+- Per prendre al local
+
+### Menjar i beure
+
+- Esmorzars
+- Cafè
+- Cervesa
+
+### Ambient
+
+- Aire condicionat
+- Apte per a nens
+
+### Instal·lacions
+
+- Lavabos
+
+### Accessibilitat
+
+- Entrada accessible amb cadira de rodes
+
+### Pagaments
+
+- Targetes de crèdit
+- Targetes de dèbit
+- Pagament sense contacte (NFC)
+
+## Practical information
+
+- Address: Rambla de Sant Jordi, 08800 Vilanova i la Geltrú, Barcelona
+- Google listing: https://maps.google.com/?cid=3177230623183732376
+- Directions: https://www.google.com/maps/dir/?api=1&destination=41.2258144,1.7318611&destination_place_id=ChIJtTIcSACHoxIRmP5bCGvKFyw
+- Plus code: 8FH36PGJ+8P
+- Rating: 5.0/5
+- Coordinates: 41.2258144, 1.7318611
+
+## What customers say
+
+> "A new and pretty good coffee shop. The girl who works here is very friendly and you can tell she cares about the place's appearance. They always ask me if I want my coffee lukewarm or really hot — in other places “hot” means almost cold, but here it really does burn your tongue… and I love it. The prices are very good compared to other coffee shops, and the coffee tastes excellent. The air conditioning is a lifesaver in the summer here too." — Ekaterina Dushko
+
+> "Pleasant atmosphere. The coffee is quite good compared to other bars. The place is very comfortable, well-lit, air-conditioned, and has music (not too loud). The staff is excellent, always very helpful." — matias emmanuel kuster
+
+> "Excellent cafe. Very good seeded bread, some of the best coffee in the area, pleasant atmosphere." — Kanijo Kanoso VLife
+
+## Languages
+
+- [català](https://cafeteria-zoe.vilanovailageltru.info/) — default
+- [español](https://cafeteria-zoe.vilanovailageltru.info/es/)
+- [English](https://cafeteria-zoe.vilanovailageltru.info/en/)
+
+## Canonical
+
+- Home: https://cafeteria-zoe.vilanovailageltru.info
+- Sitemap: https://cafeteria-zoe.vilanovailageltru.info/sitemap.xml

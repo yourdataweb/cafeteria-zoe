@@ -41,6 +41,29 @@ page.on('requestfailed', (r) => {
 const failures = [];
 const expect = (cond, msg) => { if (!cond) failures.push(msg); return cond; };
 
+/* llms.txt: fetched as a file, because that is how a crawler reads it. An empty or
+   stray-HTML file is invisible in a browser and useless to an answer engine. */
+{
+  let body = '';
+  let status = 0;
+  try {
+    const res = await fetch(BASE + 'llms.txt');
+    status = res.status;
+    body = res.ok ? await res.text() : '';
+  } catch (err) {
+    failures.push(`llms.txt fetch failed: ${err.message}`);
+  }
+  expect(status === 200, `llms.txt: expected 200 at /llms.txt, got ${status}`);
+  expect(!/<(html|body|div|p)[\s>]/i.test(body), 'llms.txt: served HTML instead of plain text');
+  expect(/^# \S/.test(body), 'llms.txt: does not start with an H1');
+  expect(/^# .*\n\n> \S/m.test(body), 'llms.txt: no blockquote summary under the H1');
+  expect(body.includes('cafeteria-zoe'), 'llms.txt: does not name this site');
+  for (const { locale } of LOCALES) expect(body.includes(`/${locale === 'ca' ? '' : locale + '/'}`), `llms.txt: no link for ${locale}`);
+  expect(body.trim().length > 300, `llms.txt: too thin (${body.trim().length} chars)`);
+  console.log('llms.txt: ok');
+}
+
+
 async function inspect(url, label) {
   await page.setViewport({ width: 1440, height: 960, deviceScaleFactor: 1 });
   await page.goto(url, { waitUntil: 'networkidle2', timeout: 40000 });

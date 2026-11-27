@@ -96,7 +96,7 @@ jobs:
             aws s3 cp "$d/index.html" "s3://$S3_BUCKET/$S3_PREFIX/$d/index.html" \
               --cache-control "public, max-age=0, must-revalidate" --only-show-errors
           done
-          for f in sitemap.xml robots.txt manifest.webmanifest; do
+          for f in sitemap.xml robots.txt llms.txt manifest.webmanifest; do
             if [ -f "$f" ]; then
               aws s3 cp "$f" "s3://$S3_BUCKET/$S3_PREFIX/$f" \
                 --cache-control "public, max-age=300, must-revalidate" --only-show-errors
@@ -108,7 +108,7 @@ jobs:
           set -euo pipefail
           missing=0
           for key in index.html es/index.html en/index.html ca/index.html \
-                     sitemap.xml robots.txt manifest.webmanifest \
+                     sitemap.xml robots.txt llms.txt manifest.webmanifest \
                      assets/css/styles.css assets/js/app.js \
                      assets/photos/handover.png assets/photos/hero-photo.jpg; do
             size=$(aws s3api head-object --bucket "$S3_BUCKET" --key "$S3_PREFIX/$key" \

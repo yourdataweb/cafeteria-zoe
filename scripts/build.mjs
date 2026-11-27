@@ -520,6 +520,82 @@ const buildManifest = (place, dict) => JSON.stringify({
   ]
 }, null, 2) + '\n';
 
+/* ---------- llms.txt (generative-engine optimisation) ---------- */
+
+/** The machine-readable summary AI crawlers and answer engines read (llmstxt.org).
+    Built from the same data and dictionaries as the pages, so it cannot drift: the
+    summary is the default locale's meta description, the sections are the same
+    specialities and features the page renders, and the facts come from place.json.
+    Shape follows the spec — one H1, a blockquote summary, flat bullet lists — because
+    that is the part parsers read reliably. Served at /llms.txt. */
+function buildLlmsTxt(place, dict, dicts) {
+  const flat = (s) => String(s).replace(/\s+/g, ' ').trim();
+  const out = [];
+  const push = (...ls) => ls.forEach((l) => out.push(l));
+
+  push(`# ${place.name}`, '', `> ${flat(dict.meta.description)}`, '');
+  if (dict.brand?.sub) push(`${flat(dict.brand.sub)}.`);
+
+  if (dict.about) {
+    const prose = [dict.about.p1, dict.about.p2].filter((p) => typeof p === 'string' && p.trim());
+    if (prose.length) push('', ...prose.map(flat));
+  }
+
+  /* Specialities: the site's own "what people order here" list, with the locale notes. */
+  const specials = (place.specialities || []).filter((s) => s && s[DEFAULT_LOCALE]);
+  if (specials.length) {
+    push('', `## ${flat(dict.kitchen?.title || dict.about?.title || 'Menu')}`, '');
+    if (dict.kitchen?.lede) push(flat(dict.kitchen.lede), '');
+    for (const s of specials) {
+      const note = s[`note_${DEFAULT_LOCALE}`] || s.note || '';
+      push(`- **${flat(s[DEFAULT_LOCALE])}**${note ? `: ${flat(note)}` : ''}`);
+    }
+  }
+
+  /* Features: the verified attributes (service options, amenities, accessibility,
+     payments), grouped by the dictionary's own group labels and translated labels. */
+  const labels = dict.capabilities?.labels || {};
+  for (const group of ['serviceOptions', 'foodAndDrink', 'atmosphere', 'amenities', 'accessibility', 'payments']) {
+    const list = (place.features?.[group] || []).filter((f) => f && f.value === true);
+    if (!list.length) continue;
+    push('', `### ${flat(dict.capabilities?.[group] || group)}`, '');
+    for (const f of list) push(`- ${flat(labels[f.key] || f.key)}`);
+  }
+
+  push('', '## Practical information', '');
+  push(`- Address: ${[place.street, `${place.postalCode} ${place.locality}`.trim(), place.region]
+    .filter(Boolean).map(flat).join(', ')}`);
+  if (place.phoneNational) push(`- Phone: ${place.phoneNational}${place.phoneE164 ? ` (${place.phoneE164})` : ''}`);
+  if (place.whatsappNumber) push(`- WhatsApp: https://wa.me/${String(place.whatsappNumber).replace(/[^0-9]/g, '')}`);
+  if (place.website) push(`- Website: ${place.website}`);
+  if (place.map?.placeUri) push(`- Google listing: ${place.map.placeUri}`);
+  if (place.map?.directionsUri) push(`- Directions: ${place.map.directionsUri}`);
+  if (place.plusCode) push(`- Plus code: ${place.plusCode}`);
+  if (Number(place.rating) > 4) {
+    push(`- Rating: ${Number(place.rating).toFixed(1)}/5${Number(place.userRatingCount) > 50
+      ? ` from ${Number(place.userRatingCount).toLocaleString('en-GB')} Google reviews` : ''}`);
+  }
+  push(`- Coordinates: ${place.latitude}, ${place.longitude}`);
+
+  /* Testimonials: the quote is what an answer engine cites. */
+  const quotes = (place.reviews || [])
+    .filter((r) => r && typeof r.text === 'string' && Number(r.rating) >= 4)
+    .slice(0, 3);
+  if (quotes.length) {
+    push('', '## What customers say');
+    for (const q of quotes) push('', `> "${flat(q.text)}"${q.author ? ` — ${flat(q.author)}` : ''}`);
+  }
+
+  push('', '## Languages', '');
+  for (const { locale, pathPrefix } of LOCALES) {
+    const name = dicts[locale]?.languageNames?.[locale] || locale.toUpperCase();
+    push(`- [${flat(name)}](${SITE}/${pathPrefix})${locale === DEFAULT_LOCALE ? ' — default' : ''}`);
+  }
+
+  push('', '## Canonical', '', `- Home: ${SITE}`, `- Sitemap: ${SITE}/sitemap.xml`, '');
+  return out.join('\n');
+}
+
 const buildRobots = () => `User-agent: *
 Allow: /
 
@@ -611,6 +687,11 @@ async function main() {
   await writeFile(join(ROOT, 'manifest.webmanifest'), buildManifest(merged, es), 'utf8');
   await writeFile(join(ROOT, 'robots.txt'), buildRobots(), 'utf8');
 
+  /* llms.txt needs the default dictionary plus the others' language names. */
+  const dicts = {};
+  for (const { locale } of LOCALES) dicts[locale] = await readJSON(join(SRC, 'i18n', `${locale}.json`));
+  await writeFile(join(ROOT, 'llms.txt'), buildLlmsTxt(merged, dicts[DEFAULT_LOCALE], dicts), 'utf8');
+
   console.log('Built:');
   for (const { locale, pathPrefix, html } of outputs) {
     console.log(`  ${(pathPrefix || '') + 'index.html'}  (${locale}, ${html.length} bytes)`);
@@ -623,7 +704,7 @@ async function main() {
     console.log(`  ${from}index.html  (redirect → ${to})`);
   }
 
-  console.log('  sitemap.xml, manifest.webmanifest, robots.txt');
+  console.log('  sitemap.xml, manifest.webmanifest, robots.txt, llms.txt');
 
   // Build-time gate: no unresolved holes or markers may reach the output.
   let failed = false;
