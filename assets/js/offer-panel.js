@@ -9,25 +9,28 @@
  * where that fact is stated and where the decision is made.
  *
  * Read from the site's data file (src/data.json):
- *   offerEnds   ISO date (YYYY-MM-DD) the site stops being free. Omit to hide the countdown.
- *   buyUrl      checkout / payment link. When absent the primary action becomes a call,
- *               because inventing a "buy" that only dials a phone would be a mislabel.
- *   offerEmail  contact address for the sales action. When absent, falls back to the phone.
+ *   offerEnds   ISO date (YYYY-MM-DD) the site stops being offered. Drives the printed
+ *               date, the day count and the red escalation — one value, three outputs.
+ *   buyUrl      checkout link. When absent the primary action becomes the phone, because
+ *               labelling a call "Me la quedo" would be a mislabel.
+ *   offerEmail  contact address for the secondary action.
  *
- * Behaviour, deliberately conservative:
- *   - Shows once per visit (sessionStorage), not on every page load, and never again in the
- *     same tab after closing. A nagging modal is why visitors bounce.
- *   - Closing leaves a small, quiet "offer" pill so the decision is never lost, only deferred.
- *   - Escape closes, focus is trapped while open and restored on close, the page behind is
- *     inert to mouse and keyboard.
- *   - With JavaScript off nothing renders: the site stays fully readable, which is the point
- *     of the site. The panel is an overlay, never the content.
+ * Copy lives in each locale's dictionary under `offer`, so translations ride with the
+ * rest of the site and no extra request is needed to render the panel.
+ *
+ * Behaviour:
+ *   - Opens on load. The panel is the point of the page while the site is unbought; a
+ *     pill nobody notices converts nothing.
+ *   - Closes on the X, the backdrop, or Escape. Closing leaves a pill that reopens it,
+ *     so the decision is deferred rather than lost, and the site stays usable.
+ *   - Opening and closing are remembered per tab (sessionStorage): closing it twice in
+ *     the same session does not fight the visitor.
+ *   - With JavaScript off nothing renders and the site stays fully readable.
  */
 (function () {
   "use strict";
 
   var KEY = "sm-offer-dismissed-v1";
-  var DELAY = 900;
 
   function readConfig() {
     var el = document.getElementById("sm-offer-config");
@@ -39,7 +42,8 @@
     if (!iso) return null;
     var end = new Date(iso + "T23:59:59").getTime();
     if (isNaN(end)) return null;
-    return Math.ceil((end - Date.now()) / 86400000);
+    var d = Math.ceil((end - Date.now()) / 86400000);
+    return d < 0 ? 0 : d;
   }
 
   function dismissed() {
@@ -49,7 +53,35 @@
     try { sessionStorage.setItem(KEY, "1"); } catch (e) { /* private mode */ }
   }
 
+  function hasPhone(cfg) {
+    return !!(cfg.phoneE164 && String(cfg.phoneE164).replace(/[^0-9]/g, "").length >= 6);
+  }
+
   function build(cfg, t) {
+    var days = daysLeft(cfg.offerEnds);
+    /* The red state is an escalation, not a separate message: same sentence, warmer
+       colour, and only inside the last three weeks. */
+    var urgent = days !== null && days <= 21;
+
+    /* Nothing to act on means nothing to show. A panel with no working action is a
+       dead end dressed as an offer. */
+    var primaryHref = cfg.buyUrl || (hasPhone(cfg) ? "tel:" + cfg.phoneE164 : (cfg.offerEmail ? "mailto:" + cfg.offerEmail : ""));
+    if (!primaryHref) return null;
+
+    var primaryLabel = cfg.buyUrl ? t.cta : (hasPhone(cfg) ? t.ctaPhone : t.ctaMail);
+    var primaryAttrs = cfg.buyUrl ? ' target="_blank" rel="noopener"' : "";
+
+    /* The secondary must go somewhere different from the primary, or it is a dead end
+       dressed as a choice. */
+    var secondaryHref = "", secondaryLabel = "", secondaryAttrs = "";
+    if (cfg.buyUrl) {
+      if (cfg.offerEmail) { secondaryHref = "mailto:" + cfg.offerEmail; secondaryLabel = t.contact; }
+      else if (hasPhone(cfg)) { secondaryHref = "tel:" + cfg.phoneE164; secondaryLabel = t.call; }
+    } else if (cfg.offerEmail && hasPhone(cfg)) {
+      secondaryHref = "tel:" + cfg.phoneE164;
+      secondaryLabel = t.call;
+    }
+
     var overlay = document.createElement("div");
     overlay.className = "sm-offer";
     overlay.setAttribute("role", "dialog");
@@ -57,48 +89,19 @@
     overlay.setAttribute("aria-labelledby", "sm-offer-title");
     overlay.setAttribute("aria-describedby", "sm-offer-lead");
 
-    var days = daysLeft(cfg.offerEnds);
-    var urgent = days !== null && days <= 30;
-
     var features = (t.features || []).map(function (f) {
       return '<li class="sm-offer__feature">' + f + "</li>";
     }).join("");
 
-    /* Days are stated as a number, not a ticking clock: a per-second countdown on a
-       three-month window is theatre, and visitors read theatre as pressure. */
-    var meta = "";
+    var when = "";
     if (cfg.offerEnds) {
-      meta = '<p class="sm-offer__meta' + (urgent ? " is-urgent" : "") + '">' +
-        '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg>' +
-        '<span>' + t.until + " <strong>" + cfg.offerEndsLabel + "</strong>" +
-        (days !== null && days > 0
-          ? ' <span class="sm-offer__days">' + t.days.replace("{n}", days) + "</span>"
-          : "") +
-        "</span></p>";
-    }
-
-    /* Two actions must go two different places. Without a checkout link the primary
-       becomes the phone call, and the secondary is dropped rather than pointing at the
-       same number twice — two buttons that do the same thing is a dead end dressed as
-       a choice. */
-    /* No checkout link and no phone means there is no action to offer. Never build a
-       `tel:` with an empty number: it renders a dead link, and on a business with no
-       phone that is worse than admitting there is only one way to reach them. */
-    var hasPhone = !!(cfg.phoneE164 && String(cfg.phoneE164).replace(/[^0-9]/g, "").length >= 6);
-    var primaryHref = cfg.buyUrl || (hasPhone ? ("tel:" + cfg.phoneE164) : ("mailto:" + (cfg.offerEmail || "")));
-    if (!cfg.buyUrl && !hasPhone && !cfg.offerEmail) return null;
-    var primaryLabel = cfg.buyUrl ? t.buy : (hasPhone ? t.buyPhone : t.contact);
-    var primaryAttrs = cfg.buyUrl ? ' target="_blank" rel="noopener"' : "";
-
-    var secondaryHref = "";
-    var secondaryLabel = "";
-    if (cfg.buyUrl) {
-      /* Checkout exists: the alternative is a human, by email if we have one. */
-      if (cfg.offerEmail) { secondaryHref = "mailto:" + cfg.offerEmail; secondaryLabel = t.contact; }
-      else if (hasPhone) { secondaryHref = "tel:" + cfg.phoneE164; secondaryLabel = t.call; }
-    } else if (cfg.offerEmail && hasPhone) {
-      secondaryHref = "tel:" + cfg.phoneE164;
-      secondaryLabel = t.call;
+      when =
+        '<div class="sm-offer__when' + (urgent ? " is-urgent" : "") + '">' +
+          '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg>' +
+          "<div>" + t.until + " <strong>" + cfg.offerEndsLabel + "</strong>" +
+            (days !== null ? '<span class="sm-offer__days">' + t.days.replace("{n}", days) + "</span>" : "") +
+          "</div>" +
+        "</div>";
     }
 
     overlay.innerHTML =
@@ -110,19 +113,29 @@
         '<p class="sm-offer__kicker">' + t.kicker + "</p>" +
         '<h2 class="sm-offer__title" id="sm-offer-title">' + t.title + "</h2>" +
         '<p class="sm-offer__lead" id="sm-offer-lead">' + t.lead + "</p>" +
-        (features ? '<ul class="sm-offer__features">' + features + "</ul>" : "") +
-        '<div class="sm-offer__price">' +
-          '<span class="sm-offer__price-year">' + t.priceYear + "</span>" +
-          '<span class="sm-offer__price-eq" aria-hidden="true">=</span>' +
-          '<span class="sm-offer__price-month">' + t.priceMonth + "</span>" +
+
+        /* Price: two labelled rows, not a side-by-side. The reader must be able to say
+           "800–1800 to build it, 120 a year with them" without reading twice. */
+        '<div class="sm-offer__prices">' +
+          '<div class="sm-offer__price-row sm-offer__price-row--was">' +
+            '<span class="sm-offer__price-label">' + t.priceWasLabel + "</span>" +
+            '<span class="sm-offer__price-value">' + t.priceWas + "</span>" +
+          "</div>" +
+          '<div class="sm-offer__price-row sm-offer__price-row--now">' +
+            '<span class="sm-offer__price-label">' + t.priceNowLabel + "</span>" +
+            '<span class="sm-offer__price-value">' + t.priceNow + "<small>" + t.priceNowNote + "</small></span>" +
+          "</div>" +
+          '<div class="sm-offer__price-equiv">' + t.priceEquiv + "</div>" +
         "</div>" +
-        '<p class="sm-offer__price-note">' + t.priceNote + "</p>" +
-        meta +
+
+        (features ? '<ul class="sm-offer__features">' + features + "</ul>" : "") +
+        when +
         '<div class="sm-offer__actions">' +
-          '<a class="sm-offer__cta" href="' + primaryHref + '"' + primaryAttrs + ">" +
-            t.cta + "</a>" +
+          '<a class="sm-offer__cta" href="' + primaryHref + '"' + primaryAttrs + ">" + primaryLabel +
+            '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5.5 5.5L20 6.5"/></svg>' +
+          "</a>" +
           (secondaryHref
-            ? '<a class="sm-offer__secondary" href="' + secondaryHref + '">' + secondaryLabel + "</a>"
+            ? '<a class="sm-offer__secondary" href="' + secondaryHref + '"' + secondaryAttrs + ">" + secondaryLabel + "</a>"
             : "") +
         "</div>" +
         '<p class="sm-offer__foot">' + t.foot + "</p>" +
@@ -141,35 +154,32 @@
     function open() {
       if (document.getElementById("sm-offer-root")) return;
       var overlay = build(cfg, cfg.copy);
-      /* No reachable action at all: show nothing rather than a panel with no exit. */
-      if (!overlay) { showPill(); return; }
+      if (!overlay) return;
       overlay.id = "sm-offer-root";
       page.appendChild(overlay);
       page.classList.add("sm-offer-open");
       document.documentElement.classList.add("sm-offer-open");
 
-      var focusables = overlay.querySelectorAll(
-        'a[href], button:not([disabled])'
-      );
+      var focusables = overlay.querySelectorAll('a[href], button:not([disabled])');
       var first = focusables[0];
       var last = focusables[focusables.length - 1];
-      if (first) first.focus({ preventScroll: true });
+      /* Focus the panel's close button, not the CTA: sending focus straight to the buy
+         button means a keyboard user can trigger a purchase by pressing Enter to dismiss
+         a dialog they have not read. */
+      var closeBtn = overlay.querySelector(".sm-offer__close");
+      if (closeBtn) closeBtn.focus({ preventScroll: true });
 
       overlay.addEventListener("keydown", function (e) {
         if (e.key === "Escape") { close(); return; }
         if (e.key !== "Tab" || !focusables.length) return;
-        /* Keep Tab inside the dialog; without this it walks into the page behind. */
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault(); last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault(); first.focus();
-        }
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
       });
     }
 
     function close() {
       var overlay = document.getElementById("sm-offer-root");
-      if (overlay) overlay.parentNode.removeChild(overlay);
+      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
       page.classList.remove("sm-offer-open");
       document.documentElement.classList.remove("sm-offer-open");
       remember();
@@ -177,7 +187,6 @@
       if (opener && opener.focus) opener.focus({ preventScroll: true });
     }
 
-    /* A quiet reopen affordance, so closing defers the decision instead of losing it. */
     function showPill() {
       if (document.getElementById("sm-offer-pill")) return;
       var pill = document.createElement("button");
@@ -186,10 +195,8 @@
       pill.type = "button";
       pill.innerHTML =
         '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v.01M11 12h1v4h1"/></svg>' +
-        "<span>" + cfg.copy.pill + "</span>";
+        "<span>" + (cfg.copy.pill || "Què passa amb aquesta web?") + "</span>";
       pill.addEventListener("click", function (e) {
-        /* Direct binding, and the event is consumed here: a site script that stops
-           propagation on body clicks was swallowing the reopen. */
         e.preventDefault();
         e.stopPropagation();
         opener = pill;
@@ -200,32 +207,17 @@
     }
 
     page.addEventListener("click", function (e) {
-      if (e.target.closest("[data-offer-close]")) { close(); }
+      if (e.target.closest("[data-offer-close]")) close();
     });
 
+    /* Open on load, but let the page paint first: a dialog that covers a blank screen
+       reads as an interstitial, and interstitials get closed on reflex. One frame is
+       enough; any longer and it feels like a pop-up. */
     if (dismissed()) {
       showPill();
     } else {
-      /* Never steal a click the visitor has already made. If they interact with the
-         page (language switch, nav, a link) before the panel is due, drop the auto
-         open and leave the pill: a dialog that appears under someone's cursor while
-         they are choosing a language is the worst possible first impression. */
-      var cancelled = false;
-      function cancel() {
-        if (cancelled) return;
-        cancelled = true;
-        window.clearTimeout(timer);
-        document.removeEventListener("pointerdown", cancel, true);
-        document.removeEventListener("keydown", cancel, true);
-        if (!document.getElementById("sm-offer-root")) showPill();
-      }
-      var timer = window.setTimeout(function () {
-        document.removeEventListener("pointerdown", cancel, true);
-        document.removeEventListener("keydown", cancel, true);
-        open();
-      }, DELAY);
-      document.addEventListener("pointerdown", cancel, true);
-      document.addEventListener("keydown", cancel, true);
+      if (document.readyState === "complete") open();
+      else window.addEventListener("load", function () { window.setTimeout(open, 60); }, { once: true });
     }
   }
 

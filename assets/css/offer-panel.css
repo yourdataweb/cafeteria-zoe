@@ -23,6 +23,15 @@ html.sm-offer-open body {
   overflow: hidden;
 }
 
+/* The cookie notice is a legal surface and must stay reachable while the panel is
+   open: a visitor cannot be asked to accept or decline tracking behind a modal. It
+   is raised above the backdrop and the panel never covers its bottom edge. */
+html.sm-offer-open #cookiebar,
+html.sm-offer-open .cookiebar,
+html.sm-offer-open #cookie-banner {
+  z-index: 300;
+}
+
 .sm-offer {
   --offer-ink: #16181d;
   --offer-ink-soft: #4a5058;
@@ -154,39 +163,91 @@ html.sm-offer-open body {
   transform: rotate(-45deg);
 }
 
-/* Price: the yearly figure and its monthly equivalent bound by an equals sign, so
-   they cannot be read as two separate charges. */
-.sm-offer__price {
+/* Price: two labelled rows, not a side-by-side. The reader must be able to say
+   "800-1800 to build it, 120 a year with them" without reading twice. The struck row
+   is the market price of building; the green row is what it costs here. */
+.sm-offer__prices {
+  border: 1px solid var(--offer-line);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: .25rem 0 1.05rem;
+  background: var(--offer-paper);
+}
+.sm-offer__price-row {
   display: flex;
   align-items: baseline;
-  flex-wrap: wrap;
-  gap: .5rem;
-  padding: 1rem 0 .2rem;
-  border-top: 1px solid var(--offer-line);
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .72rem .95rem;
 }
-.sm-offer__price-year {
+.sm-offer__price-row + .sm-offer__price-row { border-top: 1px solid var(--offer-line); }
+
+.sm-offer__price-row--was { background: #fbfaf7; }
+.sm-offer__price-row--was .sm-offer__price-label { color: var(--offer-muted); }
+.sm-offer__price-row--was .sm-offer__price-value {
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: #9aa0a8;
+  text-align: right;
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: #c0392b;
+}
+
+.sm-offer__price-row--now { background: #eef7f2; }
+.sm-offer__price-row--now .sm-offer__price-label { color: var(--offer-action); }
+.sm-offer__price-row--now .sm-offer__price-value {
   font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -.02em;
-  color: var(--offer-ink);
+  line-height: 1.05;
+  text-align: right;
+  color: var(--offer-action);
 }
-.sm-offer__price-eq {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--offer-muted);
-}
-.sm-offer__price-month {
-  font-size: 1.15rem;
+.sm-offer__price-value small {
+  display: block;
+  margin-top: .15rem;
+  font-size: .75rem;
   font-weight: 600;
+  letter-spacing: 0;
   color: var(--offer-ink-soft);
 }
-.sm-offer__price-note {
-  margin: .1rem 0 0;
-  font-size: .85rem;
-  color: var(--offer-muted);
+.sm-offer__price-label {
+  max-width: 9.5rem;
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+.sm-offer__price-equiv {
+  padding: .55rem .95rem;
+  border-top: 1px dashed #cfe3d7;
+  background: #eef7f2;
+  font-size: .82rem;
+  color: #2f6b52;
 }
 
-/* Deadline: warm red, the only place colour is allowed to alarm. */
+/* Deadline: the date and the day count together, always. They read as a fact with
+   its arithmetic, not as a nag; only the colour escalates. */
+.sm-offer__when {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  margin-top: 1rem;
+  padding: .7rem .85rem;
+  background: #f7f5f2;
+  border-radius: 9px;
+  font-size: .88rem;
+  line-height: 1.4;
+  color: var(--offer-ink-soft);
+}
+.sm-offer__when svg { flex: none; margin-top: .1rem; color: var(--offer-muted); }
+.sm-offer__when.is-urgent { background: #fdf1ee; color: #6d2318; }
+.sm-offer__when.is-urgent svg { color: var(--offer-urgent); }
+.sm-offer__days { display: block; margin-top: .15rem; font-weight: 600; color: var(--offer-urgent); }
+.sm-offer__when:not(.is-urgent) .sm-offer__days { color: var(--offer-ink-soft); }
+
 .sm-offer__meta {
   display: flex;
   align-items: flex-start;
@@ -269,7 +330,10 @@ html.sm-offer-open body {
     to   { opacity: 1; transform: none; }
   }
   .sm-offer__title { font-size: 1.35rem; }
-  .sm-offer__price-year { font-size: 1.3rem; }
+  .sm-offer__price-row { flex-direction: column; align-items: flex-start; gap: .25rem; }
+  .sm-offer__price-row--was .sm-offer__price-value { font-size: .95rem; text-align: left; }
+  .sm-offer__price-row--now .sm-offer__price-value { font-size: 1.6rem; text-align: left; }
+  .sm-offer__price-label { max-width: none; }
 }
 
 /* ---------------------------------------------------------------- pill

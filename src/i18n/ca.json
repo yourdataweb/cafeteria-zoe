@@ -163,5 +163,32 @@
   "photo": {
     "credit": "Foto:",
     "alt": "foto de la cafeteria"
+  },
+  "offer": {
+    "kicker": "L'hem feta per al teu negoci",
+    "title": "Només has de decidir si la vols.",
+    "lead": "Ja és en línia i funcionant. No pagues la construcció: pagues mantenir-la.",
+    "priceWasLabel": "Fer-la des de zero",
+    "priceWas": "800 – 1.800 € + manteniment",
+    "priceNowLabel": "Amb nosaltres",
+    "priceNow": "120 €",
+    "priceNowNote": "l'any + IVA",
+    "priceEquiv": "Són 10 € al mes, tot inclòs.",
+    "features": [
+      "Tres idiomes: català, castellà i anglès",
+      "Preparada per a Google i per als assistents d'IA",
+      "Les teves opinions reals de Google, ja incloses",
+      "Feta per al mòbil, la tauleta i l'ordinador"
+    ],
+    "until": "En línia fins al",
+    "days": "Queden {n} dies",
+    "cta": "Me la quedo",
+    "ctaPhone": "Truca i queda-te-la",
+    "ctaMail": "Escriu-nos i queda-te-la",
+    "contact": "Parla amb algú de l'equip",
+    "call": "Truca'ns",
+    "close": "Tanca",
+    "pill": "Què passa amb aquesta web?",
+    "foot": "Pagament segur. Si no la vols, la retirem quan acabi el període sense cap cost."
   }
 }

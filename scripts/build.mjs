@@ -460,6 +460,20 @@ function buildPage({ dict, place, template }) {
     siteBase: `${ORIGIN}/`,
     ogLocale: dict.ogLocale,
     jsonLd: buildJsonLd(place, dict, url),
+    /* Offer panel config: same blob shape as the shared build, so one component
+       serves both builds. */
+    offerJson: JSON.stringify({
+      offerEnds: place.offerEnds || "",
+      offerEndsLabel: place.offerEnds
+        ? new Date(place.offerEnds + "T12:00:00").toLocaleDateString(
+            dict.locale === "en" ? "en-GB" : dict.locale === "ca" ? "ca-ES" : "es-ES",
+            { day: "numeric", month: "long", year: "numeric" })
+        : "",
+      buyUrl: place.buyUrl || "",
+      offerEmail: place.offerEmail || "",
+      phoneE164: place.phoneE164,
+      copy: dict.offer,
+    }).replace(/</g, "\\u003c"),
     year: new Date().getFullYear(),
     footerCredit: fill(dict.footer.dataNote, { date: todayLabel(dict.locale) }),
     place: {

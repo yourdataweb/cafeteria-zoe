@@ -40,7 +40,8 @@
     "businessStatus": "OPERATIONAL",
     "timeZone": "Europe/Madrid",
     "plusCode": "8FH36PGJ+8P",
-    "localityLine": "Vilanova i la Geltrú"
+    "localityLine": "Vilanova i la Geltrú",
+    "offerEnds": "2026-12-19"
   },
   "map": {
     "embedUrl": "https://www.google.com/maps?q=41.2258144,1.7318611&z=17&hl=es&output=embed",
