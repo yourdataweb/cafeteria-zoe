@@ -92,9 +92,9 @@ async function inspect(url, label) {
       headingOrder: qa('h1,h2,h3,h4,h5,h6').map((h) => h.tagName).join(','),
       headingLevels: qa('h1,h2,h3,h4,h5,h6').map((h) => Number(h.tagName[1])),
       navLabels: qa('.nav a').map((a) => a.textContent.trim()),
-      /* The toolbar switch and the drawer switch both live in .header-tools; take the
-         first nav so the assertion counts one set of three, not six. */
-      langOpts: qa('.header-tools > .langs .langs__link').map((a) => ({
+      /* One switch in the header toolbar (header-tools.js may relocate it, so match
+         the toolbar container rather than a fixed parent). */
+      langOpts: qa('.sm-tools .langs .langs__link, .header-tools > .langs .langs__link').map((a) => ({
         text: a.getAttribute('hreflang') || a.textContent.trim(),
         href: a.getAttribute('href'),
         active: a.getAttribute('aria-current') === 'true'
@@ -394,7 +394,7 @@ const opened = await page.evaluate(() => ({
   socialInDrawer: document.querySelectorAll('.social-bar--mobile .social-link').length,
   /* Language switching lives in the single shared toolbar now, not duplicated in the
      drawer, so count the header switch and require the drawer to expose it. */
-  langInDrawer: document.querySelectorAll('.header-tools > .langs .langs__link').length
+  langInDrawer: document.querySelectorAll('.sm-tools .langs .langs__link, .header-tools > .langs .langs__link').length
 }));
 console.log('mobile drawer open:', JSON.stringify(opened));
 expect(opened.expanded === 'true' && opened.hidden === false, 'mobile drawer did not open');
