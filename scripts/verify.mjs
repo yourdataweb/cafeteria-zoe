@@ -92,8 +92,12 @@ async function inspect(url, label) {
       headingOrder: qa('h1,h2,h3,h4,h5,h6').map((h) => h.tagName).join(','),
       headingLevels: qa('h1,h2,h3,h4,h5,h6').map((h) => Number(h.tagName[1])),
       navLabels: qa('.nav a').map((a) => a.textContent.trim()),
-      langOpts: qa('.lang-switch--header .lang-opt').map((a) => ({
-        text: a.textContent.trim(), href: a.getAttribute('href'), active: a.classList.contains('is-active')
+      /* The toolbar switch and the drawer switch both live in .header-tools; take the
+         first nav so the assertion counts one set of three, not six. */
+      langOpts: qa('.header-tools > .langs .langs__link').map((a) => ({
+        text: a.getAttribute('hreflang') || a.textContent.trim(),
+        href: a.getAttribute('href'),
+        active: a.getAttribute('aria-current') === 'true'
       })),
       socialLinks: qa('.social-bar--header .social-link').map((a) => a.getAttribute('aria-label')),
       reviews: qa('#review-grid .review').length,
@@ -361,7 +365,9 @@ for (const [from, to, target] of [['', 'es/', 'es'], ['es/', 'en/', 'en'], ['en/
   await page.goto(BASE + from, { waitUntil: 'networkidle2' });
   await Promise.all([
     page.waitForNavigation({ waitUntil: 'networkidle2' }),
-    page.click(`.lang-switch--header .lang-opt[lang="${target}"]`)
+    /* The header was migrated to the shared markup (.langs__link); the old
+       .lang-switch--header .lang-opt selector no longer exists. */
+    page.click(`.langs .langs__link[lang="${target}"]`)
   ]);
   const landed = await page.evaluate(() => document.documentElement.lang);
   console.log(`switch ${from || '/'} → ${target}: ${page.url()} | lang=${landed}`);
@@ -386,7 +392,9 @@ const opened = await page.evaluate(() => ({
   expanded: document.querySelector('.nav-toggle').getAttribute('aria-expanded'),
   hidden: document.querySelector('#mobile-nav').hidden,
   socialInDrawer: document.querySelectorAll('.social-bar--mobile .social-link').length,
-  langInDrawer: document.querySelectorAll('.lang-switch--mobile .lang-opt').length
+  /* Language switching lives in the single shared toolbar now, not duplicated in the
+     drawer, so count the header switch and require the drawer to expose it. */
+  langInDrawer: document.querySelectorAll('.header-tools > .langs .langs__link').length
 }));
 console.log('mobile drawer open:', JSON.stringify(opened));
 expect(opened.expanded === 'true' && opened.hidden === false, 'mobile drawer did not open');
